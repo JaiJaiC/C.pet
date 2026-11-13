@@ -1,5 +1,7 @@
 # C.pet
 
+[![Build & Release](https://github.com/JaiJaiC/C.pet/actions/workflows/release.yml/badge.svg)](https://github.com/JaiJaiC/C.pet/actions/workflows/release.yml)
+
 > 一只常驻桌面右下角的桌面宠物：点一下就能记 TODO，还带系统监控和一堆小工具。
 > Windows / Electron / 免安装单文件 exe。
 
@@ -19,7 +21,7 @@
 > 首次运行 Windows 会弹 SmartScreen「已保护你的电脑」——因为没有买代码签名证书。
 > 点「更多信息」→「仍要运行」即可。
 
-中文图文教程在 **[docs/index.html](docs/index.html)**（也可以看[在线版](https://jaijaic.github.io/C.pet/)）。
+英文图文教程：**[docs/index.html](docs/index.html)**（[在线版](https://jaijaic.github.io/C.pet/)）。
 
 ## 它长什么样
 
@@ -119,6 +121,19 @@ $env:ELECTRON_BUILDER_CACHE="D:\cache\electron-builder"
 npm run dist
 ```
 
+## 自动发布（GitHub Actions）
+
+仓库里带了一条工作流 `[.github/workflows/release.yml](.github/workflows/release.yml)`：push 一个 `v*` tag 就会在
+`windows-latest` 上跑 `npm ci && npm run dist`，先校验 tag 与 `package.json` 的版本号一致，再打印 SHA-256，
+最后把 `C.pet.exe` 挂到同名 Release（Release 不存在就自动创建）。
+
+```bash
+git tag v1.12.8      # 记得同步改 package.json 的 version
+git push origin v1.12.8
+```
+
+也可以在 Actions 页面手动触发（`workflow_dispatch`）——那种模式只上传构建产物，不动 Release。
+
 ## 目录结构
 
 ```
@@ -130,7 +145,8 @@ note.html       待办面板 + monitor + tools + settings + database 五个视�
 note.js         面板全部逻辑（列表、快捷链接、监控轮询、设置同步）
 styles.css      深色主题、粒子特效、面板样式
 assets/         15 个动作立绘 + 任务栏图标（*-chroma.png 是抠图中间产物，见 .gitignore）
-docs/           图文教程（GitHub Pages 直接托管）
+docs/           英文图文教程（GitHub Pages 直接托管）
+.github/        打 tag 自动构建 exe 并发布 Release 的工作流
 ```
 
 ## 已知限制

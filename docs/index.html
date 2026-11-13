@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>C.pet 使用教程 · 桌面宠物 + 待办清单</title>
-<meta name="description" content="C.pet 是一只常驻 Windows 桌面的宠物：点一下就能记 TODO，自带系统监控和工具启动器。这里是完整的使用教程与开发者说明。" />
+<title>C.pet — desktop pet with a built-in to-do list</title>
+<meta name="description" content="C.pet is a small Windows desktop pet: click it to open a to-do list, plus a system monitor and a launcher for local tools. Free, open source, no installer." />
 <meta name="theme-color" content="#131313" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>" />
 <style>
@@ -23,10 +23,9 @@
     --green-soft: rgba(78, 201, 176, 0.12);
     --orange: #e2a87a;
     --orange-soft: rgba(226, 168, 122, 0.12);
-    --danger: #e06c75;
     --radius: 14px;
     --mono: "Cascadia Code", "JetBrains Mono", Consolas, "SF Mono", monospace;
-    --sans: "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    --sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
     --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   }
 
@@ -43,7 +42,7 @@
     color: var(--ink);
     font-family: var(--sans);
     font-size: 16px;
-    line-height: 1.75;
+    line-height: 1.72;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -51,8 +50,6 @@
   a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
   code, kbd, pre { font-family: var(--mono); }
-
-  /* ---------- progress + nav ---------- */
 
   .progress {
     position: fixed;
@@ -84,8 +81,6 @@
   .topbar nav { display: flex; gap: 14px; font-size: 13px; font-family: var(--mono); }
   .topbar nav a { color: var(--muted); }
   .topbar nav a:hover { color: var(--green); text-decoration: none; }
-
-  /* ---------- layout ---------- */
 
   .wrap {
     max-width: 1180px;
@@ -126,8 +121,6 @@
 
   main { min-width: 0; }
 
-  /* ---------- hero ---------- */
-
   .hero {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
@@ -148,7 +141,7 @@
     color: var(--muted);
     font-family: var(--mono);
     font-size: 11.5px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
   }
 
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
@@ -156,14 +149,14 @@
   h1 {
     margin: 18px 0 14px;
     font-size: clamp(30px, 3.7vw, 46px);
-    line-height: 1.22;
+    line-height: 1.2;
     letter-spacing: -0.02em;
     font-weight: 800;
   }
 
   h1 em { font-style: normal; color: var(--green); }
 
-  .lede { color: var(--ink-dim); font-size: clamp(15px, 1.5vw, 17px); max-width: 46ch; margin: 0 0 24px; }
+  .lede { color: var(--ink-dim); font-size: clamp(15px, 1.5vw, 17px); max-width: 48ch; margin: 0 0 24px; }
 
   .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 
@@ -178,21 +171,19 @@
     color: #06201b;
     font-weight: 700;
     font-size: 15px;
-    font-family: var(--sans);
-    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
 
   .btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 10px 30px rgba(78, 201, 176, 0.25); }
   .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); font-weight: 500; }
   .btn.ghost:hover { border-color: var(--green); color: var(--green); box-shadow: none; }
 
-  .hero-art { position: relative; display: grid; place-items: center; min-height: 320px; }
-  .hero-art::before {
-    content: "";
-    position: absolute;
-    inset: -12% -18%;
-    background: radial-gradient(circle at 50% 55%, rgba(78, 201, 176, 0.14), transparent 62%);
-    filter: blur(36px);
+  .hero-art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 320px;
+    background: radial-gradient(circle at 50% 55%, rgba(78, 201, 176, 0.10), transparent 64%);
   }
   .hero-art img { position: relative; width: min(100%, 300px); filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.32)); }
 
@@ -207,8 +198,6 @@
   }
   .hero-meta b { color: var(--ink-dim); font-weight: 500; }
 
-  /* ---------- sections ---------- */
-
   section { padding: 46px 0 8px; scroll-margin-top: 72px; }
 
   h2 {
@@ -222,7 +211,7 @@
 
   h2 .num { font-family: var(--mono); font-size: 13px; color: var(--green); letter-spacing: 0.14em; }
 
-  .section-intro { color: var(--muted); margin: 0 0 26px; max-width: 70ch; }
+  .section-intro { color: var(--muted); margin: 0 0 26px; max-width: 72ch; }
 
   h3 { margin: 32px 0 10px; font-size: 17px; letter-spacing: 0.01em; }
   h3::before { content: "▍"; color: var(--green); margin-right: 6px; }
@@ -232,8 +221,6 @@
 
   ul, ol { margin: 0 0 16px; padding-left: 22px; color: var(--ink-dim); }
   li { margin: 6px 0; }
-
-  /* ---------- cards ---------- */
 
   .grid { display: grid; gap: 14px; }
   .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -249,8 +236,6 @@
   .card h4 { margin: 0 0 6px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
   .card p { margin: 0; font-size: 14px; color: var(--muted); }
   .card .ico { color: var(--green); font-family: var(--mono); }
-
-  /* ---------- steps ---------- */
 
   .steps { counter-reset: step; display: grid; gap: 16px; margin: 8px 0 20px; }
 
@@ -282,9 +267,6 @@
 
   .step h4 { margin: 0 0 4px; font-size: 15px; }
   .step p { margin: 0; font-size: 14px; }
-  .step + .step { margin-top: -4px; }
-
-  /* ---------- callouts ---------- */
 
   .note {
     display: grid;
@@ -314,8 +296,6 @@
   .note.warn .tag { background: rgba(226, 168, 122, 0.18); color: var(--orange); }
   .note p { margin: 0; color: var(--ink-dim); }
   .note p + p { margin-top: 8px; }
-
-  /* ---------- code ---------- */
 
   .code {
     position: relative;
@@ -349,7 +329,6 @@
   }
 
   .code .cmt { color: #6a6a6a; }
-  .code .kw { color: #c586c0; }
   .code .str { color: #ce9178; }
 
   .copy {
@@ -377,8 +356,6 @@
     white-space: nowrap;
   }
 
-  /* ---------- tables ---------- */
-
   .table-wrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius); margin: 14px 0 20px; }
 
   table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 480px; }
@@ -387,8 +364,6 @@
   tr:last-child td { border-bottom: 0; }
   td { color: var(--ink-dim); }
   td:first-child { color: var(--ink); white-space: nowrap; }
-
-  /* ---------- figures ---------- */
 
   figure { margin: 22px 0 26px; }
   figure img {
@@ -402,10 +377,6 @@
     cursor: zoom-in;
   }
   figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: var(--mono); }
-
-  figure.small img { max-width: 420px; margin: 0 auto; }
-
-  /* ---------- lightbox ---------- */
 
   .lightbox {
     position: fixed;
@@ -421,8 +392,6 @@
   .lightbox img { max-width: 100%; max-height: 92vh; border-radius: 10px; box-shadow: var(--shadow); cursor: zoom-out; }
   .lightbox .hint { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 12px; color: var(--muted); }
 
-  /* ---------- misc ---------- */
-
   .pill {
     display: inline-block;
     padding: 1px 8px;
@@ -432,7 +401,6 @@
     font-size: 11.5px;
     color: var(--muted);
   }
-  .pill.ok { color: var(--green); border-color: rgba(78, 201, 176, 0.4); }
 
   .faq { display: grid; gap: 10px; }
   details {
@@ -490,8 +458,6 @@
   .top.show { opacity: 1; pointer-events: auto; }
   .top:hover { color: var(--green); border-color: var(--green); text-decoration: none; }
 
-  /* ---------- responsive ---------- */
-
   @media (max-width: 980px) {
     .wrap { grid-template-columns: minmax(0, 1fr); }
     .toc { display: none; }
@@ -524,257 +490,262 @@
     C.pet <span>/ tutorial</span>
   </div>
   <nav>
-    <a href="#download">下载</a>
-    <a href="#quickstart">上手</a>
-    <a href="#todo">待办</a>
-    <a href="#monitor">监控</a>
-    <a href="#shortcuts">快捷键</a>
+    <a href="#download">Download</a>
+    <a href="#quickstart">Get started</a>
+    <a href="#todo">To-do</a>
+    <a href="#monitor">Monitor</a>
+    <a href="#shortcuts">Shortcuts</a>
     <a href="#faq">FAQ</a>
-    <a href="#dev">源码</a>
+    <a href="#dev">Source</a>
   </nav>
 </header>
 
 <div class="wrap">
-  <aside class="toc" aria-label="目录">
+  <aside class="toc" aria-label="Contents">
     <div class="toc-title">Contents</div>
-    <a href="#what"><b>00</b>这是什么</a>
-    <a href="#download"><b>01</b>下载安装</a>
-    <a href="#quickstart"><b>02</b>五分钟上手</a>
-    <a href="#pet"><b>03</b>桌宠交互</a>
-    <a href="#todo"><b>04</b>待办清单</a>
-    <a href="#monitor"><b>05</b>系统监控</a>
-    <a href="#tools"><b>06</b>工具箱</a>
-    <a href="#settings"><b>07</b>设置面板</a>
-    <a href="#shortcuts"><b>08</b>快捷键</a>
-    <a href="#data"><b>09</b>数据与卸载</a>
-    <a href="#faq"><b>10</b>常见问题</a>
-    <a href="#dev"><b>11</b>开发者</a>
+    <a href="#what"><b>00</b>What it is</a>
+    <a href="#download"><b>01</b>Download</a>
+    <a href="#quickstart"><b>02</b>Quick start</a>
+    <a href="#pet"><b>03</b>Pet basics</a>
+    <a href="#todo"><b>04</b>To-do list</a>
+    <a href="#monitor"><b>05</b>System monitor</a>
+    <a href="#tools"><b>06</b>Tools panel</a>
+    <a href="#settings"><b>07</b>Settings</a>
+    <a href="#shortcuts"><b>08</b>Shortcuts</a>
+    <a href="#data"><b>09</b>Data &amp; uninstall</a>
+    <a href="#faq"><b>10</b>FAQ</a>
+    <a href="#dev"><b>11</b>Developers</a>
   </aside>
 
   <main>
     <div class="hero">
       <div>
-        <span class="eyebrow"><i class="dot"></i> v1.12.7 · Windows 10/11 · 免安装</span>
-        <h1>一只住在桌面右下角的<br /><em>待办宠物</em></h1>
+        <span class="eyebrow"><i class="dot"></i> v1.12.7 · Windows 10/11 · portable</span>
+        <h1>A desktop pet that<br /><em>holds your to-dos</em></h1>
         <p class="lede">
-          C.pet 是一个透明置顶的小桌宠。点它一下，弹出待办清单；写完关掉，它继续在角落里挠头、打哈欠、竖大拇指。
-          还顺手做了系统监控和一个本地工具启动器。
+          C.pet is a tiny transparent sprite that lives in the corner of your screen. Click it and a
+          to-do list pops up. Close it and the pet goes back to scratching its head, yawning and
+          giving you a thumbs up. There is also a system monitor and a launcher for local tools.
         </p>
         <div class="cta">
-          <a class="btn" href="https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe">⬇ 下载 C.pet.exe</a>
+          <a class="btn" href="https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe">⬇ Download C.pet.exe</a>
           <a class="btn ghost" href="https://github.com/JaiJaiC/C.pet">View source on GitHub</a>
         </div>
         <div class="hero-meta">
-          <span><b>15</b> 个动作</span>
-          <span><b>9</b> 种特效</span>
-          <span><b>0</b> 安装步骤</span>
-          <span><b>100%</b> 本地数据</span>
+          <span><b>15</b> actions</span>
+          <span><b>9</b> effects</span>
+          <span><b>0</b> install steps</span>
+          <span><b>100%</b> offline data</span>
         </div>
       </div>
       <div class="hero-art">
-        <img src="img/pet.webp" alt="C.pet 桌宠形象：戴圆框眼镜的卡通男生" />
+        <img src="img/pet.webp" alt="C.pet, a cartoon desktop pet with round glasses" />
       </div>
     </div>
 
     <section id="what">
-      <h2><span class="num">00</span>这是什么</h2>
+      <h2><span class="num">00</span>What it is</h2>
       <p class="section-intro">
-        先说清楚它不是什么：它不是那种会满屏乱爬、狂弹窗、还带广告的桌宠。它安静地待在屏幕右下角，
-        只在你想记东西的时候出现——更接近一个"长成小人样的便签"。
+        Let's be clear about what it is not: it does not crawl across your screen, pop up ads, or
+        nudge you with notifications. It sits quietly in the bottom-right corner and only shows up
+        when you want to write something down — closer to a sticky note that happens to look like a person.
       </p>
 
       <div class="grid two">
         <div class="card">
-          <h4><span class="ico">▸</span>点一下就开始记</h4>
-          <p>点宠物 → 待办面板弹出；再点宠物或按 <kbd>Esc</kbd> 之外的地方它就收起。写完直接关，不用保存——每一键都实时落盘。</p>
+          <h4><span class="ico">▸</span>One click to start writing</h4>
+          <p>Click the pet, the panel opens. Every keystroke is saved as you type — there is no save button and nothing to lose.</p>
         </div>
         <div class="card">
-          <h4><span class="ico">▸</span>不抢焦点</h4>
-          <p>窗口无边框、透明、置顶但不激活。你在写代码、看文档时，它不会突然跳到最前面打断你。</p>
+          <h4><span class="ico">▸</span>Never steals focus</h4>
+          <p>The window is frameless, transparent and always on top, but it does not activate itself. It will not jump in front of your editor mid-sentence.</p>
         </div>
         <div class="card">
-          <h4><span class="ico">▸</span>能躲进任务栏</h4>
-          <p>按住 <kbd>Shift</kbd> + <kbd>↓</kbd>，宠物会滑到任务栏后面只露一小截头；想看它再按 <kbd>Shift</kbd> + <kbd>↑</kbd>。</p>
+          <h4><span class="ico">▸</span>Can hide behind the taskbar</h4>
+          <p>Hold <kbd>Shift</kbd> + <kbd>↓</kbd> and the pet slides down until only the top of its head is visible. <kbd>Shift</kbd> + <kbd>↑</kbd> brings it back.</p>
         </div>
         <div class="card">
-          <h4><span class="ico">▸</span>数据不联网</h4>
-          <p>所有待办、设置、完成记录都在你自己电脑的 <code>%APPDATA%\c-pet</code> 里，没有任何账号、云同步或遥测。</p>
+          <h4><span class="ico">▸</span>Nothing leaves your machine</h4>
+          <p>To-dos, settings and history live in <code>%APPDATA%\c-pet</code>. No account, no sync, no telemetry, no network code.</p>
         </div>
       </div>
 
       <div class="note tip">
-        <span class="tag">TIP</span>
+        <span class="tag">ABOUT THE ART</span>
         <div>
-          <p>宠物形象来自作者本人自画像的卡通化版本——所以它戴眼镜、穿白 T 恤，动作也有点像真人。</p>
+          <p>The character is a cartoon version of the author's self-portrait — that is why it wears round glasses and a white tee.</p>
         </div>
       </div>
     </section>
 
     <section id="download">
-      <h2><span class="num">01</span>下载 &amp; 安装</h2>
-      <p class="section-intro">只有一个 exe，下载下来双击就行，没有安装向导、不写 Program Files、不需要管理员权限。</p>
+      <h2><span class="num">01</span>Download &amp; install</h2>
+      <p class="section-intro">One exe. Double-click it. No installer, no Program Files, no admin rights.</p>
 
       <div class="steps">
         <div class="step">
-          <h4>下载 exe</h4>
-          <p>点这个链接：<a href="https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe">C.pet.exe（约 80 MB）</a>，
-          或者在 <a href="https://github.com/JaiJaiC/C.pet/releases">Releases 页面</a>选版本下载。文件是 64 位 Windows 的免安装包。</p>
+          <h4>Grab the exe</h4>
+          <p>Download <a href="https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe">C.pet.exe</a> (~78 MB, 64-bit Windows),
+          or pick a version from the <a href="https://github.com/JaiJaiC/C.pet/releases">Releases page</a>.</p>
         </div>
         <div class="step">
-          <h4>放到一个固定位置</h4>
-          <p>比如 <code>D:\Tools\C.pet\C.pet.exe</code>。宠物会把自己旁边的 <code>C.pet.lnk</code> 和任务栏固定快捷方式都指向这个路径，
-          所以<strong>以后别再移动它</strong>，否则固定快捷方式会失效（重新双击一次 exe 就会自动修好）。</p>
+          <h4>Put it somewhere permanent</h4>
+          <p>For example <code>D:\Tools\C.pet\C.pet.exe</code>. The app keeps a <code>C.pet.lnk</code> next to itself and repoints pinned
+          taskbar shortcuts to that path, so <strong>avoid moving the file afterwards</strong>. If you do, just run it once from the new
+          location and it fixes itself.</p>
         </div>
         <div class="step">
-          <h4>双击运行</h4>
-          <p>第一次打开大约需要 1 秒，然后右下角出现宠物，任务栏多一个图标。就这么简单——没有第 5 步。</p>
+          <h4>Run it</h4>
+          <p>First launch takes about a second. Then the pet appears in the bottom-right corner and a taskbar icon shows up. That's it — there is no step 5.</p>
         </div>
       </div>
 
       <div class="note warn">
         <span class="tag">SMARTSCREEN</span>
         <div>
-          <p>第一次运行 Windows 可能弹「Windows 已保护你的电脑」。这不是报毒，而是因为作者没买代码签名证书（一年几千块）。
-          点<strong>「更多信息」→「仍要运行」</strong>即可，之后不会再弹。</p>
-          <p>想自己核对：文件大小约 80 MB，SHA-256 可以在 Releases 页面对照。</p>
+          <p>Windows may show "Windows protected your PC" the first time. That is not a virus warning — the exe is simply not code-signed
+          (a certificate costs a few hundred dollars a year). Click <strong>More info → Run anyway</strong>. It will not ask again.</p>
+          <p>If you want to check the file: it is ~78 MB, and the SHA-256 is listed on the Releases page next to this version.</p>
         </div>
       </div>
 
       <div class="note tip">
         <span class="tag">UNINSTALL</span>
         <div>
-          <p>卸载 = 删掉 exe。想连数据一起清掉，再删 <code>%APPDATA%\c-pet</code> 文件夹（Win+R 粘贴路径直接打开）。</p>
+          <p>Uninstalling means deleting the exe. To remove everything, delete <code>%APPDATA%\c-pet</code> as well (paste the path into Win+R).</p>
         </div>
       </div>
     </section>
 
     <section id="quickstart">
-      <h2><span class="num">02</span>五分钟上手</h2>
-      <p class="section-intro">三个动作就能用起来：点宠物、写一行字、点 ✓。剩下的功能慢慢再探索。</p>
+      <h2><span class="num">02</span>Quick start</h2>
+      <p class="section-intro">Three gestures are enough to get going: click the pet, type a line, hit the checkmark.</p>
 
       <div class="steps">
         <div class="step">
-          <h4>点一下宠物</h4>
-          <p>待办面板会出现在屏幕正中。第一次打开时里面已经有一行空白条目，光标就在那儿，直接打字。</p>
+          <h4>Click the pet</h4>
+          <p>The to-do panel opens in the middle of the screen. On first run it already contains one empty row with the caret in it — just start typing.</p>
         </div>
         <div class="step">
-          <h4>回车继续加</h4>
-          <p>按 <kbd>Enter</kbd> 在当前条目下面新建一行；在空行按 <kbd>Backspace</kbd> 删掉这一行。</p>
+          <h4>Press Enter for the next line</h4>
+          <p><kbd>Enter</kbd> inserts a row below the current one. <kbd>Backspace</kbd> on an empty row removes it.</p>
         </div>
         <div class="step">
-          <h4>点 ✓ 完成</h4>
-          <p>条目会滑进「completed database」，底部弹出 8 秒的撤销提示。手滑了？点 <strong>Undo</strong> 就回来。</p>
+          <h4>Click ✓ when it is done</h4>
+          <p>The item moves into the completed database and an 8-second undo toast appears at the bottom. Clicked by accident? Hit <strong>Undo</strong>.</p>
         </div>
         <div class="step">
-          <h4>再点一下宠物，收工</h4>
-          <p>面板收起，宠物继续待在角落里。下次按 <kbd>Ctrl</kbd> + <kbd>.</kbd> 可以直接把面板叫出来，不用去点宠物。</p>
+          <h4>Click the pet again</h4>
+          <p>The panel closes and the pet stays in its corner. Next time, press <kbd>Ctrl</kbd> + <kbd>.</kbd> to summon the panel without aiming at the sprite.</p>
         </div>
       </div>
 
       <figure>
-        <img src="img/todo.webp" alt="C.pet 待办面板：四行条目，右侧是完成按钮，底部是快捷链接" data-zoom />
-        <figcaption>待办面板：标题栏中间是 ASCII 小猫，右边依次是 Idea 切换、监控、工具、设置。</figcaption>
+        <img src="img/todo.webp" alt="The C.pet to-do panel: four rows with checkmark buttons and quick links at the bottom" data-zoom />
+        <figcaption>The panel: an ASCII cat in the title bar, then Idea switch, monitor, tools and settings.</figcaption>
       </figure>
     </section>
 
     <section id="pet">
-      <h2><span class="num">03</span>桌宠交互</h2>
-      <p class="section-intro">拖、滚、点、按键——四种手势覆盖了宠物的全部玩法。</p>
+      <h2><span class="num">03</span>Pet basics</h2>
+      <p class="section-intro">Drag, scroll, click, press — four gestures cover everything the pet can do.</p>
 
       <div class="grid two">
         <div class="card">
-          <h4><span class="ico">◈</span>拖动移动</h4>
-          <p>按住宠物任意位置拖动。松手后位置会记住，下次开机还在原处。可以拖到第二块屏幕。</p>
+          <h4><span class="ico">◈</span>Drag to move</h4>
+          <p>Grab the sprite anywhere and drag. The position is remembered across restarts, and it works across monitors.</p>
         </div>
         <div class="card">
-          <h4><span class="ico">◈</span>滚轮缩放</h4>
-          <p>鼠标悬停宠物上下滚：20% ~ 135%，实时生效。设置里也能用滑块调，或一键「Reset to minimum size」。</p>
+          <h4><span class="ico">◈</span>Scroll to resize</h4>
+          <p>Hover the pet and scroll: 20% to 135%, applied live. The settings panel has a slider too, plus a "reset to minimum size" button.</p>
         </div>
         <div class="card">
-          <h4><span class="ico">◈</span>微调位置</h4>
-          <p>点一下宠物或面板后，按 <kbd>Shift</kbd> + 方向键，每次挪 4px。只在 C.pet 聚焦时生效，不会抢别的软件的按键。</p>
+          <h4><span class="ico">◈</span>Nudge with the keyboard</h4>
+          <p>After clicking the pet or the panel, <kbd>Shift</kbd> + arrow keys move it 4 px at a time. Only while C.pet is focused, so other apps keep normal text selection.</p>
         </div>
         <div class="card">
-          <h4><span class="ico">◈</span>躲进任务栏</h4>
-          <p>一直按 <kbd>Shift</kbd> + <kbd>↓</kbd> 可以把宠物滑到任务栏后面，只露出头；按 <kbd>Shift</kbd> + <kbd>↑</kbd> 出来。</p>
+          <h4><span class="ico">◈</span>Hide behind the taskbar</h4>
+          <p>Keep holding <kbd>Shift</kbd> + <kbd>↓</kbd> and the pet slides behind the taskbar until only its head peeks out.</p>
         </div>
       </div>
 
-      <h3>15 个动作与 9 种特效</h3>
+      <h3>15 actions, 9 effects</h3>
       <p>
-        默认每 30 秒随机换一个姿势：Idle、Scratch（挠头）、Head（摸头）、Akimbo（抱臂）、Thumb（竖大拇指）、
-        Wave、Stretch、Yawn、Think、Clap、Point、Bow、Cheer、Giggle、Drowsy、Salute。
-        关闭「Auto actions」后它就安静地待着不动。
+        By default the pet switches to a random pose every 30 seconds: Idle, Scratch, Head, Akimbo, Thumb,
+        Wave, Stretch, Yawn, Think, Clap, Point, Bow, Cheer, Giggle, Drowsy and Salute. Turn off
+        "Auto actions" and it will simply stand there.
       </p>
       <p>
-        特效是在宠物身上叠一层 CSS 粒子：Sparkles、Soft glow、Hearts、Fireflies、Rainbow aura、Rain、Snow、Sunshine。
-        它们纯装饰、几乎不占 CPU，适合截图。
+        Effects add a CSS particle layer on top: Sparkles, Soft glow, Hearts, Fireflies, Rainbow aura,
+        Rain, Snow and Sunshine. Purely decorative, and cheap enough to leave on.
       </p>
 
       <div class="note tip">
         <span class="tag">FULLSCREEN</span>
         <div>
-          <p>检测到你进入全屏（游戏、全屏视频、演示模式）时，宠物会自动隐藏；退出全屏后自己回来。</p>
+          <p>When a fullscreen window takes over (a game, a video, a presentation), the pet hides itself and comes back when you leave fullscreen.</p>
         </div>
       </div>
     </section>
 
     <section id="todo">
-      <h2><span class="num">04</span>待办清单</h2>
+      <h2><span class="num">04</span>The to-do list</h2>
       <p class="section-intro">
-        两套互相独立的列表：<strong>To Do</strong> 放正经事，<strong>Idea</strong> 放随手想到的点子。
-        标题栏右边那个显示 <code>Idea</code> 的按钮，就是切换过去的意思。
+        Two independent lists: <strong>To Do</strong> for real tasks, <strong>Idea</strong> for things you want to remember later.
+        The button showing <code>Idea</code> in the title bar switches to the other list.
       </p>
 
-      <h3>编辑方式</h3>
+      <h3>Editing</h3>
       <ul>
-        <li>直接点条目文字就在原地编辑，输入即保存——没有"保存"按钮这回事。</li>
-        <li><kbd>Enter</kbd> 在下方插入新行，<kbd>Shift</kbd> + <kbd>Enter</kbd> 在条目前换行。</li>
-        <li>条目为空时 <kbd>Backspace</kbd> 删除该行（最后一行会留着，不会删空）。</li>
-        <li>面板高度随内容自动伸缩，最多到屏幕高度为止。</li>
+        <li>Click any row and edit in place. Every keystroke is persisted — no save button.</li>
+        <li><kbd>Enter</kbd> inserts a row below, <kbd>Shift</kbd> + <kbd>Enter</kbd> adds a line break inside a row.</li>
+        <li><kbd>Backspace</kbd> on an empty row deletes it (the last remaining row is kept so there is always somewhere to type).</li>
+        <li>The panel grows and shrinks with its content, up to the height of the screen.</li>
       </ul>
 
-      <h3>完成 &amp; 撤销</h3>
+      <h3>Completing and undoing</h3>
       <p>
-        点右侧 ✓ 会把条目归档：从当前列表消失，写进 <strong>completed database</strong>（带来源列表和完成日期），
-        同时底部弹出 8 秒的 Undo。8 秒后提示消失，但记录还在数据库里，随时能翻。
+        The checkmark archives the row: it leaves the list, lands in the completed database with its
+        source list and completion date, and an 8-second undo appears. After 8 seconds the toast is gone
+        but the record is still in the database.
       </p>
 
-      <h3>快捷链接</h3>
+      <h3>Quick links</h3>
       <p>
-        面板底部那一排按钮是常用网址，默认是作者自己的三个项目页。点 <strong>+</strong> 添加自己的：
-        名字最多 24 字符，URL 必须是 http/https。点开链接会用 <strong>Microsoft Edge</strong> 打开，不会在宠物窗口里加载网页。
+        The row of buttons at the bottom holds your favourite URLs — by default three of the author's
+        project pages. Press <strong>+</strong> to add your own: a name up to 24 characters and an
+        http/https URL. Links open in <strong>Microsoft Edge</strong>, never inside the pet window.
       </p>
 
       <div class="note warn">
-        <span class="tag">注意</span>
+        <span class="tag">NOTE</span>
         <div>
-          <p>待办数据存在浏览器的 localStorage 里，跟着 exe 所在的 Windows 用户走。换一台电脑不会同步——想搬数据就复制 <code>%APPDATA%\c-pet</code>。</p>
+          <p>To-dos live in localStorage inside the app's profile, which is per Windows user and per machine. There is no sync — to move them, copy <code>%APPDATA%\c-pet</code>.</p>
         </div>
       </div>
     </section>
 
     <section id="monitor">
-      <h2><span class="num">05</span>系统监控</h2>
+      <h2><span class="num">05</span>System monitor</h2>
       <p class="section-intro">
-        标题栏那个小窗口图标进去就是 Monitor。每 0.45 秒刷新一次，每张卡片带一条迷你趋势曲线，
-        颜色随负载从绿变黄再变红。
+        The little window icon in the title bar opens the monitor. It refreshes every 0.45 s, and each card
+        carries a tiny sparkline whose colour shifts from green to yellow to red as load rises.
       </p>
 
       <figure>
-        <img src="img/monitor.webp" alt="C.pet 系统监控面板：CPU、内存、GPU、磁盘、网络等 14 张卡片" data-zoom />
-        <figcaption>14 张卡片：CPU / 核心数 / 主频 / 内存 / 可用内存 / GPU / C 盘 / 下行 / 上行 / Temp / 进程数 / 开机时长 / 空闲时间 / 自身内存。</figcaption>
+        <img src="img/monitor.webp" alt="The monitor panel with 14 cards: CPU, cores, clock, memory, GPU, disk, network, temp cache and more" data-zoom />
+        <figcaption>14 cards: CPU, cores, clock, memory, available RAM, GPU, C: drive, download, upload, temp cache, processes, uptime, idle, own memory.</figcaption>
       </figure>
 
       <div class="table-wrap">
         <table>
-          <thead><tr><th>指标</th><th>数据来源</th><th>说明</th></tr></thead>
+          <thead><tr><th>Metric</th><th>Source</th><th>Notes</th></tr></thead>
           <tbody>
-            <tr><td>CPU / 内存 / 磁盘 / 进程</td><td>Node <code>os</code> + <code>fs.statfs</code></td><td>通用指标，任何 Windows 都有</td></tr>
-            <tr><td>GPU / 上行 / 下行</td><td>Windows 性能计数器 <code>Get-Counter</code></td><td>依赖显卡驱动，虚拟机里可能取不到，显示 <code>Unavailable</code></td></tr>
-            <tr><td>Temp cache</td><td>递归统计 <code>%TEMP%</code> 一级目录</td><td>30 秒采样一次，避免频繁扫盘</td></tr>
-            <tr><td>系统空闲</td><td><code>powerMonitor.getSystemIdleTime()</code></td><td>键盘鼠标无操作时长，可以当"摸鱼计时器"</td></tr>
-            <tr><td>C.pet memory</td><td><code>process.memoryUsage().rss</code></td><td>它自己的内存占用，通常在 150–250 MB</td></tr>
+            <tr><td>CPU / memory / disk / processes</td><td>Node <code>os</code> + <code>fs.statfs</code></td><td>Available on every Windows install</td></tr>
+            <tr><td>GPU / download / upload</td><td>Windows performance counters (<code>Get-Counter</code>)</td><td>Depends on the GPU driver; may read <code>Unavailable</code> on VMs</td></tr>
+            <tr><td>Temp cache</td><td>Recursive size of <code>%TEMP%</code> (one level)</td><td>Sampled every 30 s to avoid hammering the disk</td></tr>
+            <tr><td>System idle</td><td><code>powerMonitor.getSystemIdleTime()</code></td><td>Time since the last keyboard or mouse input</td></tr>
+            <tr><td>C.pet memory</td><td><code>process.memoryUsage().rss</code></td><td>The app's own footprint, usually 150–250 MB</td></tr>
           </tbody>
         </table>
       </div>
@@ -782,38 +753,39 @@
       <div class="note tip">
         <span class="tag">TIP</span>
         <div>
-          <p>监控面板打开时才会轮询，切走或收起就停止，平时不占 CPU。</p>
+          <p>Polling only runs while the monitor panel is visible. Switch away or close the panel and it stops.</p>
         </div>
       </div>
     </section>
 
     <section id="tools">
-      <h2><span class="num">06</span>工具箱（可选）</h2>
+      <h2><span class="num">06</span>Tools panel (optional)</h2>
       <p class="section-intro">
-        这是给作者自己用的小功能：把常用的命令行小工具做成按钮，一键启动。它不是给所有人准备的，没有这些 exe 也能正常用 C.pet。
+        This one is personal: the author wires his own command-line utilities into buttons. C.pet works fine without any of them.
       </p>
       <p>
-        程序启动时会依次在 <code>exe 所在目录</code>、<code>上一级目录</code>、<code>scripts\</code> 子目录里，查找下面这几个固定文件名：
+        At startup the app looks for these exact filenames in the exe's own folder, its parent folder,
+        and a <code>scripts\</code> subfolder:
       </p>
 
       <div class="table-wrap">
         <table>
-          <thead><tr><th>文件名</th><th>面板上的名字</th><th>用途</th></tr></thead>
+          <thead><tr><th>File name</th><th>Button label</th><th>Used for</th></tr></thead>
           <tbody>
-            <tr><td>Clean_Cache.exe</td><td>Clean Cache</td><td>清理缓存目录</td></tr>
-            <tr><td>Merge_PDF.exe</td><td>Merge PDF</td><td>合并 PDF</td></tr>
-            <tr><td>PPT_To_HTML.exe</td><td>PPT To HTML</td><td>PPT 转网页</td></tr>
-            <tr><td>Remove_gray_background.exe</td><td>Remove Gray Background</td><td>去灰底抠图</td></tr>
-            <tr><td>Word2Pdf_Tool.exe</td><td>Word To PDF</td><td>Word 转 PDF</td></tr>
-            <tr><td>生成Index.exe</td><td>生成 Index</td><td>当前禁用（按钮灰掉）</td></tr>
+            <tr><td>Clean_Cache.exe</td><td>Clean Cache</td><td>Wiping cache directories</td></tr>
+            <tr><td>Merge_PDF.exe</td><td>Merge PDF</td><td>Merging PDFs</td></tr>
+            <tr><td>PPT_To_HTML.exe</td><td>PPT To HTML</td><td>Converting slides to a web page</td></tr>
+            <tr><td>Remove_gray_background.exe</td><td>Remove Gray Background</td><td>Chroma-key style cutouts</td></tr>
+            <tr><td>Word2Pdf_Tool.exe</td><td>Word To PDF</td><td>DOCX to PDF</td></tr>
+            <tr><td>生成Index.exe</td><td>生成 Index</td><td>Disabled in the UI</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>想用这个面板，把自己的工具按上面的名字放进 exe 旁边的 <code>scripts\</code> 文件夹：</p>
+      <p>To use the panel, drop your own tools next to the exe with those names:</p>
 
       <div class="code">
-        <header><span>目录结构</span><button class="copy" type="button">copy</button></header>
+        <header><span>Folder layout</span><button class="copy" type="button">copy</button></header>
 <pre>D:\Tools\C.pet\
 ├─ C.pet.exe
 └─ scripts\
@@ -823,220 +795,234 @@
       </div>
 
       <div class="note warn">
-        <span class="tag">安全</span>
+        <span class="tag">SECURITY</span>
         <div>
-          <p>C.pet 会直接 <code>spawn</code> 这些 exe。所以只用你自己放进去的文件——别人塞了 exe 进你的 <code>scripts\</code>，点一下就会运行。</p>
+          <p>C.pet simply <code>spawn</code>s whatever sits in <code>scripts\</code> with those names. Only put files there that you trust — anyone who can write to that folder can get code executed with one click.</p>
         </div>
       </div>
     </section>
 
     <section id="settings">
-      <h2><span class="num">07</span>设置面板</h2>
-      <p class="section-intro">齿轮图标进去。内容多，面板是可滚动的（最高 420px），下面按从上到下的顺序说明。</p>
+      <h2><span class="num">07</span>Settings</h2>
+      <p class="section-intro">Behind the gear icon. The panel scrolls (max 420 px tall); here it is top to bottom.</p>
 
       <figure>
-        <img src="img/settings.webp" alt="C.pet 设置面板：宠物大小、自动动作、动作列表、特效、快捷键、置顶、开机自启等" data-zoom />
-        <figcaption>设置面板：上面是外观，中间是动作/特效，下面是快捷键、系统集成和退出。</figcaption>
+        <img src="img/settings.webp" alt="Settings panel: pet size, auto actions, action grid, effects, shortcut, always on top, launch at startup" data-zoom />
+        <figcaption>Settings: appearance on top, actions and effects in the middle, system integration and quit at the bottom.</figcaption>
       </figure>
 
       <div class="table-wrap">
         <table>
-          <thead><tr><th>设置项</th><th>作用</th><th>建议</th></tr></thead>
+          <thead><tr><th>Setting</th><th>What it does</th><th>Suggestion</th></tr></thead>
           <tbody>
-            <tr><td>Pet size</td><td>20%–135% 缩放宠物</td><td>笔记本上 60% 左右比较不挡事</td></tr>
-            <tr><td>Auto actions</td><td>每 30 秒随机换动作</td><td>录屏或专注时关掉</td></tr>
-            <tr><td>Actions</td><td>16 个动作按钮，点了立刻播放</td><td>可以当"我现在很开心"的开关</td></tr>
-            <tr><td>Effects</td><td>9 种粒子特效，单选</td><td>Hearts / Snow 适合截图</td></tr>
-            <tr><td>Quick entry</td><td>改唤出待办面板的快捷键</td><td>点按钮 → 直接按新组合 → <kbd>Esc</kbd> 取消</td></tr>
-            <tr><td>Always on top</td><td>宠物是否永远置顶</td><td>看全屏电影时可以关</td></tr>
-            <tr><td>Launch at startup</td><td>登录 Windows 时自动启动</td><td>写入 HKCU 的 Run 键，可随时关</td></tr>
-            <tr><td>Reset to minimum size</td><td>缩到 20%</td><td>急用时不用拖滑块</td></tr>
-            <tr><td>Move pet to bottom-right</td><td>位置复位</td><td>宠物跑丢了点这个</td></tr>
-            <tr><td>Completed database</td><td>查看/删除完成记录</td><td>右边数字是记录条数</td></tr>
-            <tr><td>Quit C.pet</td><td>退出程序</td><td>快捷键 <kbd>Ctrl</kbd> + <kbd>/</kbd></td></tr>
+            <tr><td>Pet size</td><td>Scales the sprite from 20% to 135%</td><td>On a laptop, 60% stays out of the way</td></tr>
+            <tr><td>Auto actions</td><td>Random pose every 30 s</td><td>Turn it off while recording or focusing</td></tr>
+            <tr><td>Actions</td><td>16 buttons that play a pose immediately</td><td>Handy as a "yes I'm happy" switch</td></tr>
+            <tr><td>Effects</td><td>Nine particle effects, one at a time</td><td>Hearts and Snow look great in screenshots</td></tr>
+            <tr><td>Quick entry</td><td>Rebinds the panel shortcut</td><td>Click the button, press the new combo, <kbd>Esc</kbd> cancels</td></tr>
+            <tr><td>Always on top</td><td>Whether the pet floats above other windows</td><td>Turn off for fullscreen video</td></tr>
+            <tr><td>Launch at startup</td><td>Starts the pet when you sign in</td><td>Writes a HKCU Run entry, removable any time</td></tr>
+            <tr><td>Reset to minimum size</td><td>Jumps to 20%</td><td>Faster than dragging the slider</td></tr>
+            <tr><td>Move pet to bottom-right</td><td>Restores the default position</td><td>Use it when the pet got lost off-screen</td></tr>
+            <tr><td>Completed database</td><td>Browse and delete finished items</td><td>The number on the right is the record count</td></tr>
+            <tr><td>Quit C.pet</td><td>Exits the app</td><td>Same as <kbd>Ctrl</kbd> + <kbd>/</kbd></td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="note tip">
-        <span class="tag">快捷键冲突</span>
+        <span class="tag">CONFLICTS</span>
         <div>
-          <p>如果 <kbd>Ctrl</kbd> + <kbd>.</kbd> 被别的软件抢了，设置里会显示占用提示。点快捷键按钮重新按一个组合即可，只支持 Ctrl / Alt / Shift + 一个键。</p>
+          <p>If another app already owns <kbd>Ctrl</kbd> + <kbd>.</kbd>, the panel will tell you it is taken. Click the shortcut button and press a different combination — Ctrl / Alt / Shift plus one key.</p>
         </div>
       </div>
     </section>
 
     <section id="shortcuts">
-      <h2><span class="num">08</span>快捷键总表</h2>
-      <p class="section-intro">就这几个，不用背。</p>
+      <h2><span class="num">08</span>Keyboard shortcuts</h2>
+      <p class="section-intro">Five of them. Nothing to memorise.</p>
 
       <div class="table-wrap">
         <table>
-          <thead><tr><th>快捷键</th><th>作用</th><th>生效范围</th></tr></thead>
+          <thead><tr><th>Shortcut</th><th>Action</th><th>Scope</th></tr></thead>
           <tbody>
-            <tr><td><kbd>Ctrl</kbd> + <kbd>.</kbd></td><td>唤出 / 隐藏待办面板</td><td>全局，可自定义</td></tr>
-            <tr><td><kbd>Ctrl</kbd> + <kbd>/</kbd></td><td>退出 C.pet</td><td>全局</td></tr>
-            <tr><td><kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>移动宠物（每次 4px）</td><td>仅 C.pet 聚焦时</td></tr>
-            <tr><td>鼠标拖动</td><td>移动宠物</td><td>宠物本身</td></tr>
-            <tr><td>滚轮</td><td>缩放宠物</td><td>悬停宠物时</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>.</kbd></td><td>Show or hide the to-do panel</td><td>Global, rebindable</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>/</kbd></td><td>Quit C.pet</td><td>Global</td></tr>
+            <tr><td><kbd>Shift</kbd> + arrows</td><td>Nudge the pet by 4 px</td><td>Only while C.pet is focused</td></tr>
+            <tr><td>Mouse drag</td><td>Move the pet</td><td>On the sprite</td></tr>
+            <tr><td>Mouse wheel</td><td>Resize the pet</td><td>While hovering the sprite</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="note tip">
-        <span class="tag">为什么只有聚焦时才响应</span>
+        <span class="tag">WHY FOCUS ONLY</span>
         <div>
-          <p>方向键是很珍贵的按键。C.pet 只在它自己处于活动窗口时才拦截 <kbd>Shift</kbd> + 方向键，</p>
-          <p>所以在浏览器、Word、IDE 里选中文字依然是正常的 <kbd>Shift</kbd> + 方向键选择，不会被桌宠抢走。</p>
+          <p>Arrow keys are precious. C.pet grabs <kbd>Shift</kbd> + arrows only when one of its own windows is the active one,</p>
+          <p>so selecting text in your browser, Word or editor still behaves exactly as before.</p>
         </div>
       </div>
     </section>
 
     <section id="data">
-      <h2><span class="num">09</span>数据与卸载</h2>
-      <p class="section-intro">所有东西都在一个文件夹里，复制它就等于备份。</p>
+      <h2><span class="num">09</span>Data &amp; uninstall</h2>
+      <p class="section-intro">Everything lives in one folder. Copy it and you have a backup.</p>
 
       <div class="table-wrap">
         <table>
-          <thead><tr><th>内容</th><th>位置</th><th>格式</th></tr></thead>
+          <thead><tr><th>What</th><th>Where</th><th>Format</th></tr></thead>
           <tbody>
-            <tr><td>待办 / 想法 / 快捷链接</td><td><code>%APPDATA%\c-pet\Local Storage\</code></td><td>Chromium localStorage</td></tr>
-            <tr><td>设置（大小、特效、快捷键…）</td><td><code>%APPDATA%\c-pet\settings.json</code></td><td>JSON</td></tr>
-            <tr><td>窗口位置</td><td><code>%APPDATA%\c-pet\window-state.json</code></td><td>JSON</td></tr>
-            <tr><td>完成记录</td><td><code>%APPDATA%\c-pet\completed-tasks.json</code></td><td>JSON</td></tr>
-            <tr><td>开机自启</td><td><code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code></td><td>注册表</td></tr>
+            <tr><td>To-dos, ideas, quick links</td><td><code>%APPDATA%\c-pet\Local Storage\</code></td><td>Chromium localStorage</td></tr>
+            <tr><td>Settings (size, effect, shortcut…)</td><td><code>%APPDATA%\c-pet\settings.json</code></td><td>JSON</td></tr>
+            <tr><td>Window position</td><td><code>%APPDATA%\c-pet\window-state.json</code></td><td>JSON</td></tr>
+            <tr><td>Completed history</td><td><code>%APPDATA%\c-pet\completed-tasks.json</code></td><td>JSON</td></tr>
+            <tr><td>Launch at startup</td><td><code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code></td><td>Registry</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h3>备份 / 迁移</h3>
+      <h3>Backup and migrate</h3>
       <div class="code">
         <header><span>PowerShell</span><button class="copy" type="button">copy</button></header>
-<pre><span class="cmt"># 备份（会打包成一个 zip）</span>
+<pre><span class="cmt"># back up into a zip</span>
 Compress-Archive <span class="str">"$env:APPDATA\c-pet"</span> <span class="str">"D:\c-pet-backup.zip"</span> -Force
 
-<span class="cmt"># 换电脑后还原：先装好 exe，退出 C.pet，再解压覆盖</span>
+<span class="cmt"># restore on a new machine: install the exe, quit C.pet, then</span>
 Expand-Archive <span class="str">"D:\c-pet-backup.zip"</span> <span class="str">"$env:APPDATA"</span> -Force</pre>
       </div>
 
-      <h3>升级</h3>
+      <h3>Upgrading</h3>
       <p>
-        直接下新 exe 覆盖旧的就行。存储路径是固定的 <code>%APPDATA%\c-pet</code>，和 exe 放在哪、叫什么名字都无关，
-        所以 1.10 升到 1.12 也不会丢待办。
+        Download the new exe and overwrite the old one. The storage path is fixed at
+        <code>%APPDATA%\c-pet</code> regardless of where the exe lives, so nothing is lost.
       </p>
 
-      <h3>彻底卸载</h3>
+      <h3>Full uninstall</h3>
       <ol>
-        <li>设置里关掉「Launch at startup」（如果你开过）。</li>
-        <li>退出 C.pet（<kbd>Ctrl</kbd> + <kbd>/</kbd>）。</li>
-        <li>删掉 exe，删掉 <code>%APPDATA%\c-pet</code>。</li>
+        <li>Turn off "Launch at startup" in settings, if you enabled it.</li>
+        <li>Quit C.pet (<kbd>Ctrl</kbd> + <kbd>/</kbd>).</li>
+        <li>Delete the exe, then delete <code>%APPDATA%\c-pet</code>.</li>
       </ol>
     </section>
 
     <section id="faq">
-      <h2><span class="num">10</span>常见问题</h2>
+      <h2><span class="num">10</span>FAQ</h2>
 
       <div class="faq">
         <details open>
-          <summary>弹了 SmartScreen / Defender 拦截，是病毒吗？</summary>
-          <p>不是。exe 没有代码签名证书，所以 Windows 会对任何未知发布者的新程序都提示一次。点「更多信息 → 仍要运行」即可。源码全部开源，你可以自己 <code>npm run dist</code> 打一个一模一样的包。</p>
+          <summary>SmartScreen / Defender flagged it. Is it malware?</summary>
+          <p>No. The exe is not code-signed, so Windows shows the same warning for any new unsigned binary from an unknown publisher. Click "More info → Run anyway". The full source is public — you can rebuild the exact same exe with <code>npm run dist</code>.</p>
         </details>
         <details>
-          <summary>双击了没反应 / 只开了一个？</summary>
-          <p>C.pet 是单实例程序：重复双击不会开第二个，而是把已经在跑的那只宠物叫到前台。如果确实没看到它，可能是被拖到屏幕外了——设置里点「Move pet to bottom-right」。</p>
+          <summary>Double-clicking does nothing, or only one instance opens.</summary>
+          <p>C.pet is single-instance: launching it again brings the running pet to the front instead of starting a second copy. If you cannot see it, it was probably dragged off-screen — use "Move pet to bottom-right" in settings.</p>
         </details>
         <details>
-          <summary>宠物挡住我了 / 想让它消失一会儿</summary>
-          <p>滚轮缩到 20%，或者按 <kbd>Shift</kbd> + <kbd>↓</kbd> 把它塞到任务栏后面。想彻底关掉用 <kbd>Ctrl</kbd> + <kbd>/</kbd>；关掉「Auto actions」也能让它安静。</p>
+          <summary>It is in the way. How do I make it go away for a while?</summary>
+          <p>Scroll down to 20%, or hold <kbd>Shift</kbd> + <kbd>↓</kbd> to push it behind the taskbar. To stop it completely, press <kbd>Ctrl</kbd> + <kbd>/</kbd>; turning off "Auto actions" also makes it sit still.</p>
         </details>
         <details>
-          <summary><kbd>Ctrl</kbd> + <kbd>.</kbd> 没反应</summary>
-          <p>多半被输入法或别的软件占了。打开设置 → Quick entry → 点按钮 → 直接按一个新的组合（比如 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd>）。如果新组合也失败，面板会提示。</p>
+          <summary><kbd>Ctrl</kbd> + <kbd>.</kbd> does nothing.</summary>
+          <p>Something else grabbed it — usually an IME or an editor. Open Settings → Quick entry → click the button → press a new combination (for example <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd>). The panel reports it if the new one fails too.</p>
         </details>
         <details>
-          <summary>打游戏时宠物挡视野</summary>
-          <p>进入全屏会自动隐藏。如果游戏是"无边框窗口化"，系统认为它不是全屏，可以用 <kbd>Ctrl</kbd> + <kbd>.</kbd> 之外的方式临时缩到 20%。</p>
+          <summary>Does it get in the way of games?</summary>
+          <p>It hides itself whenever a real fullscreen window is in front. Borderless-windowed games are not reported as fullscreen by Windows, so there you may want to shrink the pet to 20%.</p>
         </details>
         <details>
-          <summary>监控里 GPU / 网速显示 Unavailable</summary>
-          <p>这两项走 Windows 性能计数器。部分精简版系统、虚拟机、老显卡驱动没有这些计数器，取不到就显示 Unavailable，其它指标不受影响。</p>
+          <summary>GPU or network shows "Unavailable".</summary>
+          <p>Those two come from Windows performance counters. Stripped-down Windows builds, virtual machines and some drivers do not expose them; the other metrics keep working.</p>
         </details>
         <details>
-          <summary>待办突然空了</summary>
-          <p>数据在 <code>%APPDATA%\c-pet\Local Storage</code>。常见原因是：换了 Windows 用户、清空了 AppData、或者用清理软件把 Electron 缓存一起删了。所以重要清单建议偶尔备份一下那个文件夹。</p>
+          <summary>My to-dos disappeared.</summary>
+          <p>They live in <code>%APPDATA%\c-pet\Local Storage</code>. Typical causes: switching Windows users, clearing AppData, or a "cleaner" tool wiping Electron profiles. Worth zipping that folder now and then.</p>
         </details>
         <details>
-          <summary>支持 Mac / Linux 吗？</summary>
-          <p>不支持。代码里用了 <code>SetWindowsHookEx</code>、<code>Get-Counter</code>、任务栏快捷方式和 <code>shell.writeShortcutLink</code>，都是 Windows 专有 API。</p>
+          <summary>Mac or Linux?</summary>
+          <p>No. The app relies on <code>SetWindowsHookEx</code>, <code>Get-Counter</code>, Windows taskbar shortcut APIs and <code>shell.writeShortcutLink</code> — all Windows-only.</p>
         </details>
         <details>
-          <summary>会不会偷偷上传我的待办？</summary>
-          <p>不会。整个程序没有任何网络请求代码；唯一会打开的浏览器是你在快捷链接里点的那一下，交给 Edge 打开。</p>
+          <summary>Does it upload my to-dos anywhere?</summary>
+          <p>No. There is no networking code in the app. The only browser that ever opens is Edge, and only when you click one of your own quick links.</p>
         </details>
       </div>
     </section>
 
     <section id="dev">
-      <h2><span class="num">11</span>开发者</h2>
-      <p class="section-intro">纯 Electron + 原生 JS，没有框架、没有构建步骤、没有依赖注入容器。总共 8 个文件。</p>
+      <h2><span class="num">11</span>Developers</h2>
+      <p class="section-intro">Plain Electron and vanilla JS. No framework, no bundler, no build step, eight source files.</p>
 
-      <h3>跑起来</h3>
+      <h3>Run from source</h3>
       <div class="code">
-        <header><span>终端</span><button class="copy" type="button">copy</button></header>
+        <header><span>Terminal</span><button class="copy" type="button">copy</button></header>
 <pre>git clone https://github.com/JaiJaiC/C.pet.git
 cd C.pet
 npm install
-npm start          <span class="cmt"># 开发模式，直接起 Electron</span></pre>
+npm start          <span class="cmt"># runs Electron directly</span></pre>
       </div>
 
-      <h3>打包 exe</h3>
+      <h3>Build the exe</h3>
       <div class="code">
-        <header><span>终端</span><button class="copy" type="button">copy</button></header>
-<pre>npm run dist       <span class="cmt"># dist\C.pet.exe（单文件免安装）</span>
-npm run pack       <span class="cmt"># dist\win-unpacked\（目录版，调试用）</span></pre>
+        <header><span>Terminal</span><button class="copy" type="button">copy</button></header>
+<pre>npm run dist       <span class="cmt"># dist\C.pet.exe (single-file portable)</span>
+npm run pack       <span class="cmt"># dist\win-unpacked\ (folder build, for debugging)</span></pre>
       </div>
 
-      <p>两个已经写进 <code>package.json</code> 的坑：</p>
+      <p>Two gotchas are already handled in <code>package.json</code>:</p>
       <ul>
-        <li><code>electronDist: "node_modules/electron/dist"</code> — 复用本地 Electron，打包时不再重新下载 100 MB。</li>
-        <li><code>signAndEditExecutable: false</code> — 跳过 rcedit 与签名，没有证书也能出包（代价是没有图标以外的元数据编辑，以及会触发 SmartScreen）。</li>
+        <li><code>electronDist: "node_modules/electron/dist"</code> — reuse the local Electron instead of downloading 100 MB again while packaging.</li>
+        <li><code>signAndEditExecutable: false</code> — skip rcedit and signing, so the build works without a certificate (the trade-off is no embedded version resource and the SmartScreen prompt).</li>
       </ul>
 
       <div class="note tip">
-        <span class="tag">缓存</span>
+        <span class="tag">CACHE</span>
         <div>
-          <p>如果第一次打包卡在下载 NSIS，给 electron-builder 指一个可写的缓存目录：</p>
-          <p><code>$env:ELECTRON_BUILDER_CACHE="D:\cache\electron-builder"</code>，然后再 <code>npm run dist</code>。</p>
+          <p>If the first build stalls while downloading NSIS, point electron-builder at a writable cache directory:</p>
+          <p><code>$env:ELECTRON_BUILDER_CACHE="D:\cache\electron-builder"</code>, then run <code>npm run dist</code> again.</p>
         </div>
       </div>
 
-      <h3>代码地图</h3>
+      <h3>Releases</h3>
+      <p>
+        <a href="https://github.com/JaiJaiC/C.pet/blob/main/.github/workflows/release.yml">.github/workflows/release.yml</a>
+        builds the portable exe on <code>windows-latest</code> whenever a <code>v*</code> tag is pushed, checks that the tag matches
+        <code>package.json</code>, prints the SHA-256, and attaches the exe to the matching GitHub Release (creating it if needed).
+        The same workflow can be started manually from the Actions tab for a build-only run.
+      </p>
+      <div class="code">
+        <header><span>Terminal</span><button class="copy" type="button">copy</button></header>
+<pre><span class="cmt"># tag a release</span>
+git tag v1.12.8
+git push origin v1.12.8</pre>
+      </div>
+
+      <h3>Code map</h3>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>文件</th><th>职责</th><th>要点</th></tr></thead>
+          <thead><tr><th>File</th><th>Role</th><th>Highlights</th></tr></thead>
           <tbody>
-            <tr><td>main.js</td><td>主进程</td><td>两个无边框置顶窗口、拖拽移动与边界、全局快捷键、性能采样、工具启动、单实例锁</td></tr>
-            <tr><td>preload.js</td><td>桥接层</td><td>contextBridge 暴露 30 个 <code>window.cpet.*</code> 方法，渲染层拿不到 Node</td></tr>
-            <tr><td>index.html / app.js</td><td>宠物窗口</td><td>精灵图切换、指针拖拽、滚轮缩放、鼠标穿透、特效</td></tr>
-            <tr><td>note.html / note.js</td><td>面板窗口</td><td>五个视图（todo / monitor / tools / settings / database）与 localStorage 数据</td></tr>
-            <tr><td>styles.css</td><td>样式</td><td>深色主题、粒子特效、面板自适应高度</td></tr>
-            <tr><td>assets/</td><td>素材</td><td>15 个动作立绘 + 256px 任务栏图标</td></tr>
+            <tr><td>main.js</td><td>Main process</td><td>Two frameless always-on-top windows, drag and screen-edge maths, global shortcuts, performance sampling, tool launching, single-instance lock</td></tr>
+            <tr><td>preload.js</td><td>Bridge</td><td>~30 <code>window.cpet.*</code> methods over contextBridge; the renderer never sees Node</td></tr>
+            <tr><td>index.html / app.js</td><td>Pet window</td><td>Sprite switching, pointer dragging, wheel zoom, click-through, effects</td></tr>
+            <tr><td>note.html / note.js</td><td>Panel window</td><td>Five views (todo / monitor / tools / settings / database) and the localStorage model</td></tr>
+            <tr><td>styles.css</td><td>Styling</td><td>Dark theme, particle effects, auto-sizing panels</td></tr>
+            <tr><td>assets/</td><td>Art</td><td>15 pose sprites plus a 256 px taskbar icon</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h3>技术栈</h3>
+      <h3>Stack</h3>
       <p>
-        Electron 31 · Chromium 与 Node 同源 · 原生 HTML/CSS/JS · electron-builder 24（portable 目标）·
-        PowerShell 互操作（性能计数器、键盘钩子、全屏检测）。没有 React、没有打包器、没有 TypeScript 编译步骤。
+        Electron 31 · native HTML/CSS/JS · electron-builder 24 (portable target) · PowerShell interop for
+        performance counters, the keyboard hook and fullscreen detection. No React, no webpack, no TypeScript step.
       </p>
 
-      <h3>许可证</h3>
-      <p><a href="https://github.com/JaiJaiC/C.pet/blob/main/LICENSE">MIT</a> —— 随便用、随便改，保留版权声明即可。素材是作者本人形象，二次创作前先打个招呼。</p>
+      <h3>License</h3>
+      <p><a href="https://github.com/JaiJaiC/C.pet/blob/main/LICENSE">MIT</a> — use it, fork it, ship it, keep the notice. The character art is the author's own likeness; please ask before reusing it.</p>
     </section>
 
     <footer>
-      <span>C.pet v1.12.7 · MIT · Made by JaiJaiC</span>
+      <span>C.pet v1.12.7 · MIT · built by JaiJaiC</span>
       <span>
         <a href="https://github.com/JaiJaiC/C.pet">GitHub</a> ·
         <a href="https://github.com/JaiJaiC/C.pet/releases">Releases</a> ·
@@ -1046,11 +1032,11 @@ npm run pack       <span class="cmt"># dist\win-unpacked\（目录版，调试�
   </main>
 </div>
 
-<a class="top" id="toTop" href="#top" aria-label="回到顶部">↑</a>
+<a class="top" id="toTop" href="#top" aria-label="Back to top">↑</a>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="放大预览">
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
   <img id="lightboxImg" alt="" />
-  <span class="hint">点击任意处 / 按 Esc 关闭</span>
+  <span class="hint">click anywhere or press Esc to close</span>
 </div>
 
 <script>
@@ -1083,7 +1069,6 @@ npm run pack       <span class="cmt"># dist\win-unpacked\（目录版，调试�
   window.addEventListener("resize", onScroll);
   onScroll();
 
-  // copy buttons
   document.querySelectorAll(".code").forEach(function (block) {
     var button = block.querySelector(".copy");
     var pre = block.querySelector("pre");
@@ -1108,7 +1093,6 @@ npm run pack       <span class="cmt"># dist\win-unpacked\（目录版，调试�
     });
   });
 
-  // lightbox
   var lightbox = document.getElementById("lightbox");
   var lightboxImg = document.getElementById("lightboxImg");
 
