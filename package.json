@@ -1,21 +1,8 @@
 {
   "name": "c-pet",
   "version": "1.12.7",
-  "author": "JaiJaiC",
-  "description": "A QQ-pet style Windows desktop pet with To Do notes, a system monitor and a tools launcher.",
-  "license": "MIT",
-  "homepage": "https://jaijaic.github.io/C.pet/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/JaiJaiC/C.pet.git"
-  },
-  "keywords": [
-    "desktop-pet",
-    "electron",
-    "todo",
-    "windows",
-    "qq-pet"
-  ],
+  "author": "C.pet",
+  "description": "A QQ-pet-like desktop pet with editable todo notes.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -38,7 +25,6 @@
       "main.js",
       "preload.js",
       "assets/**/*",
-      "!assets/*-chroma.png",
       "package.json"
     ],
     "win": {

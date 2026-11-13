@@ -11,7 +11,7 @@
 
 不想折腾代码，直接下 exe：
 
-**[⬇️ 下载 C.pet.exe（Windows 64 位，免安装）](https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe)**
+**[⬇️ 下载 C.pet.exe（Windows 64 位，约 78 MB，免安装）](https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe)**
 
 双击就能跑，不写系统目录、不需要管理员权限。数据存在 `%APPDATA%\c-pet`，
 删掉 exe 就等于卸载（想彻底清干净再删这个文件夹）。

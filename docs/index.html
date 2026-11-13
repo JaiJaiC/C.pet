@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>C.pet 使用教程 · 桌面宠物 + 待办清单</title>
+<meta name="description" content="C.pet 是一只常驻 Windows 桌面的宠物：点一下就能记 TODO，自带系统监控和工具启动器。这里是完整的使用教程与开发者说明。" />
+<meta name="theme-color" content="#131313" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>" />
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #131313;
+    --bg-soft: #181818;
+    --panel: #1e1e1e;
+    --panel-2: #242424;
+    --line: #333;
+    --line-soft: #2a2a2a;
+    --ink: #f0f0f0;
+    --ink-dim: #b9b9b9;
+    --muted: #858585;
+    --green: #4ec9b0;
+    --green-soft: rgba(78, 201, 176, 0.12);
+    --orange: #e2a87a;
+    --orange-soft: rgba(226, 168, 122, 0.12);
+    --danger: #e06c75;
+    --radius: 14px;
+    --mono: "Cascadia Code", "JetBrains Mono", Consolas, "SF Mono", monospace;
+    --sans: "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1100px 600px at 80% -10%, rgba(78, 201, 176, 0.09), transparent 60%),
+      radial-gradient(900px 500px at 10% 0%, rgba(226, 168, 122, 0.07), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  code, kbd, pre { font-family: var(--mono); }
+
+  /* ---------- progress + nav ---------- */
+
+  .progress {
+    position: fixed;
+    inset: 0 auto auto 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, var(--green), var(--orange));
+    z-index: 60;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px clamp(16px, 4vw, 40px);
+    background: rgba(19, 19, 19, 0.82);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 14px; color: var(--ink); }
+  .brand img { width: 26px; height: 26px; object-fit: contain; }
+  .brand span { color: var(--muted); }
+
+  .topbar nav { display: flex; gap: 14px; font-size: 13px; font-family: var(--mono); }
+  .topbar nav a { color: var(--muted); }
+  .topbar nav a:hover { color: var(--green); text-decoration: none; }
+
+  /* ---------- layout ---------- */
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 40px) 80px;
+    display: grid;
+    grid-template-columns: 196px minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 76px;
+    padding: 18px 0;
+    font-size: 13px;
+    font-family: var(--mono);
+    display: grid;
+    gap: 2px;
+  }
+
+  .toc-title { color: var(--muted); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px; }
+
+  .toc a {
+    display: flex;
+    gap: 10px;
+    padding: 6px 10px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+    border-radius: 0 6px 6px 0;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+
+  .toc a b { color: var(--line); font-weight: 400; }
+  .toc a:hover { color: var(--ink-dim); background: var(--panel); text-decoration: none; }
+  .toc a.active { color: var(--green); border-left-color: var(--green); background: var(--green-soft); }
+  .toc a.active b { color: var(--green); }
+
+  main { min-width: 0; }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(20px, 4vw, 48px);
+    align-items: center;
+    padding: clamp(28px, 6vw, 72px) 0 28px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+
+  h1 {
+    margin: 18px 0 14px;
+    font-size: clamp(30px, 3.7vw, 46px);
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+  }
+
+  h1 em { font-style: normal; color: var(--green); }
+
+  .lede { color: var(--ink-dim); font-size: clamp(15px, 1.5vw, 17px); max-width: 46ch; margin: 0 0 24px; }
+
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--green);
+    background: var(--green);
+    color: #06201b;
+    font-weight: 700;
+    font-size: 15px;
+    font-family: var(--sans);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  .btn:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 10px 30px rgba(78, 201, 176, 0.25); }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); font-weight: 500; }
+  .btn.ghost:hover { border-color: var(--green); color: var(--green); box-shadow: none; }
+
+  .hero-art { position: relative; display: grid; place-items: center; min-height: 320px; }
+  .hero-art::before {
+    content: "";
+    position: absolute;
+    inset: -12% -18%;
+    background: radial-gradient(circle at 50% 55%, rgba(78, 201, 176, 0.14), transparent 62%);
+    filter: blur(36px);
+  }
+  .hero-art img { position: relative; width: min(100%, 300px); filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.32)); }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-top: 22px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .hero-meta b { color: var(--ink-dim); font-weight: 500; }
+
+  /* ---------- sections ---------- */
+
+  section { padding: 46px 0 8px; scroll-margin-top: 72px; }
+
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin: 0 0 6px;
+    font-size: clamp(23px, 2.6vw, 30px);
+    letter-spacing: -0.01em;
+  }
+
+  h2 .num { font-family: var(--mono); font-size: 13px; color: var(--green); letter-spacing: 0.14em; }
+
+  .section-intro { color: var(--muted); margin: 0 0 26px; max-width: 70ch; }
+
+  h3 { margin: 32px 0 10px; font-size: 17px; letter-spacing: 0.01em; }
+  h3::before { content: "▍"; color: var(--green); margin-right: 6px; }
+
+  p { margin: 0 0 14px; color: var(--ink-dim); }
+  p strong, li strong { color: var(--ink); font-weight: 600; }
+
+  ul, ol { margin: 0 0 16px; padding-left: 22px; color: var(--ink-dim); }
+  li { margin: 6px 0; }
+
+  /* ---------- cards ---------- */
+
+  .grid { display: grid; gap: 14px; }
+  .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .card {
+    padding: 18px 20px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, var(--panel), var(--bg-soft));
+  }
+
+  .card h4 { margin: 0 0 6px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+  .card p { margin: 0; font-size: 14px; color: var(--muted); }
+  .card .ico { color: var(--green); font-family: var(--mono); }
+
+  /* ---------- steps ---------- */
+
+  .steps { counter-reset: step; display: grid; gap: 16px; margin: 8px 0 20px; }
+
+  .step {
+    counter-increment: step;
+    position: relative;
+    padding: 16px 20px 16px 62px;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    background: var(--panel);
+  }
+
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid rgba(78, 201, 176, 0.4);
+    background: var(--green-soft);
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .step h4 { margin: 0 0 4px; font-size: 15px; }
+  .step p { margin: 0; font-size: 14px; }
+  .step + .step { margin-top: -4px; }
+
+  /* ---------- callouts ---------- */
+
+  .note {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    margin: 18px 0;
+    font-size: 14.5px;
+  }
+
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    height: fit-content;
+    white-space: nowrap;
+  }
+
+  .note.tip { border-color: rgba(78, 201, 176, 0.35); background: var(--green-soft); }
+  .note.tip .tag { background: rgba(78, 201, 176, 0.18); color: var(--green); }
+  .note.warn { border-color: rgba(226, 168, 122, 0.35); background: var(--orange-soft); }
+  .note.warn .tag { background: rgba(226, 168, 122, 0.18); color: var(--orange); }
+  .note p { margin: 0; color: var(--ink-dim); }
+  .note p + p { margin-top: 8px; }
+
+  /* ---------- code ---------- */
+
+  .code {
+    position: relative;
+    margin: 14px 0 18px;
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: #171717;
+    overflow: hidden;
+  }
+
+  .code header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line-soft);
+    background: #1b1b1b;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+
+  .code pre {
+    margin: 0;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d6d6d6;
+  }
+
+  .code .cmt { color: #6a6a6a; }
+  .code .kw { color: #c586c0; }
+  .code .str { color: #ce9178; }
+
+  .copy {
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .copy:hover { color: var(--green); border-color: var(--green); }
+
+  kbd {
+    display: inline-block;
+    padding: 1px 7px;
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    background: var(--panel-2);
+    color: var(--ink);
+    font-size: 12.5px;
+    line-height: 1.6;
+    white-space: nowrap;
+  }
+
+  /* ---------- tables ---------- */
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--radius); margin: 14px 0 20px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 480px; }
+  th, td { padding: 11px 16px; text-align: left; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { background: var(--panel); color: var(--muted); font-weight: 500; font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; }
+  tr:last-child td { border-bottom: 0; }
+  td { color: var(--ink-dim); }
+  td:first-child { color: var(--ink); white-space: nowrap; }
+
+  /* ---------- figures ---------- */
+
+  figure { margin: 22px 0 26px; }
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    cursor: zoom-in;
+  }
+  figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); font-family: var(--mono); }
+
+  figure.small img { max-width: 420px; margin: 0 auto; }
+
+  /* ---------- lightbox ---------- */
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    display: none;
+    place-items: center;
+    padding: 4vw;
+    background: rgba(8, 8, 8, 0.9);
+    backdrop-filter: blur(6px);
+  }
+  .lightbox.open { display: grid; }
+  .lightbox img { max-width: 100%; max-height: 92vh; border-radius: 10px; box-shadow: var(--shadow); cursor: zoom-out; }
+  .lightbox .hint { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  /* ---------- misc ---------- */
+
+  .pill {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .pill.ok { color: var(--green); border-color: rgba(78, 201, 176, 0.4); }
+
+  .faq { display: grid; gap: 10px; }
+  details {
+    border: 1px solid var(--line-soft);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 4px 18px;
+  }
+  details[open] { border-color: var(--line); }
+  summary {
+    cursor: pointer;
+    padding: 12px 0;
+    font-weight: 600;
+    color: var(--ink);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "+"; font-family: var(--mono); color: var(--green); width: 14px; }
+  details[open] summary::before { content: "−"; }
+  details > p, details > ul { font-size: 14.5px; margin: 0 0 14px 24px; }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 26px;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .top {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 40;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: rgba(30, 30, 30, 0.9);
+    color: var(--ink-dim);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, color 0.2s, border-color 0.2s;
+  }
+  .top.show { opacity: 1; pointer-events: auto; }
+  .top:hover { color: var(--green); border-color: var(--green); text-decoration: none; }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width: 980px) {
+    .wrap { grid-template-columns: minmax(0, 1fr); }
+    .toc { display: none; }
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .hero-art { order: -1; min-height: 240px; }
+    .hero-art img { width: min(60%, 220px); }
+    .grid.three { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 15px; }
+    .grid.two, .grid.three { grid-template-columns: minmax(0, 1fr); }
+    .topbar nav { display: none; }
+    .step { padding-left: 54px; }
+    .code pre { font-size: 12px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="img/pet.webp" alt="" />
+    C.pet <span>/ tutorial</span>
+  </div>
+  <nav>
+    <a href="#download">下载</a>
+    <a href="#quickstart">上手</a>
+    <a href="#todo">待办</a>
+    <a href="#monitor">监控</a>
+    <a href="#shortcuts">快捷键</a>
+    <a href="#faq">FAQ</a>
+    <a href="#dev">源码</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <aside class="toc" aria-label="目录">
+    <div class="toc-title">Contents</div>
+    <a href="#what"><b>00</b>这是什么</a>
+    <a href="#download"><b>01</b>下载安装</a>
+    <a href="#quickstart"><b>02</b>五分钟上手</a>
+    <a href="#pet"><b>03</b>桌宠交互</a>
+    <a href="#todo"><b>04</b>待办清单</a>
+    <a href="#monitor"><b>05</b>系统监控</a>
+    <a href="#tools"><b>06</b>工具箱</a>
+    <a href="#settings"><b>07</b>设置面板</a>
+    <a href="#shortcuts"><b>08</b>快捷键</a>
+    <a href="#data"><b>09</b>数据与卸载</a>
+    <a href="#faq"><b>10</b>常见问题</a>
+    <a href="#dev"><b>11</b>开发者</a>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div>
+        <span class="eyebrow"><i class="dot"></i> v1.12.7 · Windows 10/11 · 免安装</span>
+        <h1>一只住在桌面右下角的<br /><em>待办宠物</em></h1>
+        <p class="lede">
+          C.pet 是一个透明置顶的小桌宠。点它一下，弹出待办清单；写完关掉，它继续在角落里挠头、打哈欠、竖大拇指。
+          还顺手做了系统监控和一个本地工具启动器。
+        </p>
+        <div class="cta">
+          <a class="btn" href="https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe">⬇ 下载 C.pet.exe</a>
+          <a class="btn ghost" href="https://github.com/JaiJaiC/C.pet">View source on GitHub</a>
+        </div>
+        <div class="hero-meta">
+          <span><b>15</b> 个动作</span>
+          <span><b>9</b> 种特效</span>
+          <span><b>0</b> 安装步骤</span>
+          <span><b>100%</b> 本地数据</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <img src="img/pet.webp" alt="C.pet 桌宠形象：戴圆框眼镜的卡通男生" />
+      </div>
+    </div>
+
+    <section id="what">
+      <h2><span class="num">00</span>这是什么</h2>
+      <p class="section-intro">
+        先说清楚它不是什么：它不是那种会满屏乱爬、狂弹窗、还带广告的桌宠。它安静地待在屏幕右下角，
+        只在你想记东西的时候出现——更接近一个"长成小人样的便签"。
+      </p>
+
+      <div class="grid two">
+        <div class="card">
+          <h4><span class="ico">▸</span>点一下就开始记</h4>
+          <p>点宠物 → 待办面板弹出；再点宠物或按 <kbd>Esc</kbd> 之外的地方它就收起。写完直接关，不用保存——每一键都实时落盘。</p>
+        </div>
+        <div class="card">
+          <h4><span class="ico">▸</span>不抢焦点</h4>
+          <p>窗口无边框、透明、置顶但不激活。你在写代码、看文档时，它不会突然跳到最前面打断你。</p>
+        </div>
+        <div class="card">
+          <h4><span class="ico">▸</span>能躲进任务栏</h4>
+          <p>按住 <kbd>Shift</kbd> + <kbd>↓</kbd>，宠物会滑到任务栏后面只露一小截头；想看它再按 <kbd>Shift</kbd> + <kbd>↑</kbd>。</p>
+        </div>
+        <div class="card">
+          <h4><span class="ico">▸</span>数据不联网</h4>
+          <p>所有待办、设置、完成记录都在你自己电脑的 <code>%APPDATA%\c-pet</code> 里，没有任何账号、云同步或遥测。</p>
+        </div>
+      </div>
+
+      <div class="note tip">
+        <span class="tag">TIP</span>
+        <div>
+          <p>宠物形象来自作者本人自画像的卡通化版本——所以它戴眼镜、穿白 T 恤，动作也有点像真人。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <h2><span class="num">01</span>下载 &amp; 安装</h2>
+      <p class="section-intro">只有一个 exe，下载下来双击就行，没有安装向导、不写 Program Files、不需要管理员权限。</p>
+
+      <div class="steps">
+        <div class="step">
+          <h4>下载 exe</h4>
+          <p>点这个链接：<a href="https://github.com/JaiJaiC/C.pet/releases/latest/download/C.pet.exe">C.pet.exe（约 80 MB）</a>，
+          或者在 <a href="https://github.com/JaiJaiC/C.pet/releases">Releases 页面</a>选版本下载。文件是 64 位 Windows 的免安装包。</p>
+        </div>
+        <div class="step">
+          <h4>放到一个固定位置</h4>
+          <p>比如 <code>D:\Tools\C.pet\C.pet.exe</code>。宠物会把自己旁边的 <code>C.pet.lnk</code> 和任务栏固定快捷方式都指向这个路径，
+          所以<strong>以后别再移动它</strong>，否则固定快捷方式会失效（重新双击一次 exe 就会自动修好）。</p>
+        </div>
+        <div class="step">
+          <h4>双击运行</h4>
+          <p>第一次打开大约需要 1 秒，然后右下角出现宠物，任务栏多一个图标。就这么简单——没有第 5 步。</p>
+        </div>
+      </div>
+
+      <div class="note warn">
+        <span class="tag">SMARTSCREEN</span>
+        <div>
+          <p>第一次运行 Windows 可能弹「Windows 已保护你的电脑」。这不是报毒，而是因为作者没买代码签名证书（一年几千块）。
+          点<strong>「更多信息」→「仍要运行」</strong>即可，之后不会再弹。</p>
+          <p>想自己核对：文件大小约 80 MB，SHA-256 可以在 Releases 页面对照。</p>
+        </div>
+      </div>
+
+      <div class="note tip">
+        <span class="tag">UNINSTALL</span>
+        <div>
+          <p>卸载 = 删掉 exe。想连数据一起清掉，再删 <code>%APPDATA%\c-pet</code> 文件夹（Win+R 粘贴路径直接打开）。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quickstart">
+      <h2><span class="num">02</span>五分钟上手</h2>
+      <p class="section-intro">三个动作就能用起来：点宠物、写一行字、点 ✓。剩下的功能慢慢再探索。</p>
+
+      <div class="steps">
+        <div class="step">
+          <h4>点一下宠物</h4>
+          <p>待办面板会出现在屏幕正中。第一次打开时里面已经有一行空白条目，光标就在那儿，直接打字。</p>
+        </div>
+        <div class="step">
+          <h4>回车继续加</h4>
+          <p>按 <kbd>Enter</kbd> 在当前条目下面新建一行；在空行按 <kbd>Backspace</kbd> 删掉这一行。</p>
+        </div>
+        <div class="step">
+          <h4>点 ✓ 完成</h4>
+          <p>条目会滑进「completed database」，底部弹出 8 秒的撤销提示。手滑了？点 <strong>Undo</strong> 就回来。</p>
+        </div>
+        <div class="step">
+          <h4>再点一下宠物，收工</h4>
+          <p>面板收起，宠物继续待在角落里。下次按 <kbd>Ctrl</kbd> + <kbd>.</kbd> 可以直接把面板叫出来，不用去点宠物。</p>
+        </div>
+      </div>
+
+      <figure>
+        <img src="img/todo.webp" alt="C.pet 待办面板：四行条目，右侧是完成按钮，底部是快捷链接" data-zoom />
+        <figcaption>待办面板：标题栏中间是 ASCII 小猫，右边依次是 Idea 切换、监控、工具、设置。</figcaption>
+      </figure>
+    </section>
+
+    <section id="pet">
+      <h2><span class="num">03</span>桌宠交互</h2>
+      <p class="section-intro">拖、滚、点、按键——四种手势覆盖了宠物的全部玩法。</p>
+
+      <div class="grid two">
+        <div class="card">
+          <h4><span class="ico">◈</span>拖动移动</h4>
+          <p>按住宠物任意位置拖动。松手后位置会记住，下次开机还在原处。可以拖到第二块屏幕。</p>
+        </div>
+        <div class="card">
+          <h4><span class="ico">◈</span>滚轮缩放</h4>
+          <p>鼠标悬停宠物上下滚：20% ~ 135%，实时生效。设置里也能用滑块调，或一键「Reset to minimum size」。</p>
+        </div>
+        <div class="card">
+          <h4><span class="ico">◈</span>微调位置</h4>
+          <p>点一下宠物或面板后，按 <kbd>Shift</kbd> + 方向键，每次挪 4px。只在 C.pet 聚焦时生效，不会抢别的软件的按键。</p>
+        </div>
+        <div class="card">
+          <h4><span class="ico">◈</span>躲进任务栏</h4>
+          <p>一直按 <kbd>Shift</kbd> + <kbd>↓</kbd> 可以把宠物滑到任务栏后面，只露出头；按 <kbd>Shift</kbd> + <kbd>↑</kbd> 出来。</p>
+        </div>
+      </div>
+
+      <h3>15 个动作与 9 种特效</h3>
+      <p>
+        默认每 30 秒随机换一个姿势：Idle、Scratch（挠头）、Head（摸头）、Akimbo（抱臂）、Thumb（竖大拇指）、
+        Wave、Stretch、Yawn、Think、Clap、Point、Bow、Cheer、Giggle、Drowsy、Salute。
+        关闭「Auto actions」后它就安静地待着不动。
+      </p>
+      <p>
+        特效是在宠物身上叠一层 CSS 粒子：Sparkles、Soft glow、Hearts、Fireflies、Rainbow aura、Rain、Snow、Sunshine。
+        它们纯装饰、几乎不占 CPU，适合截图。
+      </p>
+
+      <div class="note tip">
+        <span class="tag">FULLSCREEN</span>
+        <div>
+          <p>检测到你进入全屏（游戏、全屏视频、演示模式）时，宠物会自动隐藏；退出全屏后自己回来。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="todo">
+      <h2><span class="num">04</span>待办清单</h2>
+      <p class="section-intro">
+        两套互相独立的列表：<strong>To Do</strong> 放正经事，<strong>Idea</strong> 放随手想到的点子。
+        标题栏右边那个显示 <code>Idea</code> 的按钮，就是切换过去的意思。
+      </p>
+
+      <h3>编辑方式</h3>
+      <ul>
+        <li>直接点条目文字就在原地编辑，输入即保存——没有"保存"按钮这回事。</li>
+        <li><kbd>Enter</kbd> 在下方插入新行，<kbd>Shift</kbd> + <kbd>Enter</kbd> 在条目前换行。</li>
+        <li>条目为空时 <kbd>Backspace</kbd> 删除该行（最后一行会留着，不会删空）。</li>
+        <li>面板高度随内容自动伸缩，最多到屏幕高度为止。</li>
+      </ul>
+
+      <h3>完成 &amp; 撤销</h3>
+      <p>
+        点右侧 ✓ 会把条目归档：从当前列表消失，写进 <strong>completed database</strong>（带来源列表和完成日期），
+        同时底部弹出 8 秒的 Undo。8 秒后提示消失，但记录还在数据库里，随时能翻。
+      </p>
+
+      <h3>快捷链接</h3>
+      <p>
+        面板底部那一排按钮是常用网址，默认是作者自己的三个项目页。点 <strong>+</strong> 添加自己的：
+        名字最多 24 字符，URL 必须是 http/https。点开链接会用 <strong>Microsoft Edge</strong> 打开，不会在宠物窗口里加载网页。
+      </p>
+
+      <div class="note warn">
+        <span class="tag">注意</span>
+        <div>
+          <p>待办数据存在浏览器的 localStorage 里，跟着 exe 所在的 Windows 用户走。换一台电脑不会同步——想搬数据就复制 <code>%APPDATA%\c-pet</code>。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="monitor">
+      <h2><span class="num">05</span>系统监控</h2>
+      <p class="section-intro">
+        标题栏那个小窗口图标进去就是 Monitor。每 0.45 秒刷新一次，每张卡片带一条迷你趋势曲线，
+        颜色随负载从绿变黄再变红。
+      </p>
+
+      <figure>
+        <img src="img/monitor.webp" alt="C.pet 系统监控面板：CPU、内存、GPU、磁盘、网络等 14 张卡片" data-zoom />
+        <figcaption>14 张卡片：CPU / 核心数 / 主频 / 内存 / 可用内存 / GPU / C 盘 / 下行 / 上行 / Temp / 进程数 / 开机时长 / 空闲时间 / 自身内存。</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>指标</th><th>数据来源</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>CPU / 内存 / 磁盘 / 进程</td><td>Node <code>os</code> + <code>fs.statfs</code></td><td>通用指标，任何 Windows 都有</td></tr>
+            <tr><td>GPU / 上行 / 下行</td><td>Windows 性能计数器 <code>Get-Counter</code></td><td>依赖显卡驱动，虚拟机里可能取不到，显示 <code>Unavailable</code></td></tr>
+            <tr><td>Temp cache</td><td>递归统计 <code>%TEMP%</code> 一级目录</td><td>30 秒采样一次，避免频繁扫盘</td></tr>
+            <tr><td>系统空闲</td><td><code>powerMonitor.getSystemIdleTime()</code></td><td>键盘鼠标无操作时长，可以当"摸鱼计时器"</td></tr>
+            <tr><td>C.pet memory</td><td><code>process.memoryUsage().rss</code></td><td>它自己的内存占用，通常在 150–250 MB</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note tip">
+        <span class="tag">TIP</span>
+        <div>
+          <p>监控面板打开时才会轮询，切走或收起就停止，平时不占 CPU。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tools">
+      <h2><span class="num">06</span>工具箱（可选）</h2>
+      <p class="section-intro">
+        这是给作者自己用的小功能：把常用的命令行小工具做成按钮，一键启动。它不是给所有人准备的，没有这些 exe 也能正常用 C.pet。
+      </p>
+      <p>
+        程序启动时会依次在 <code>exe 所在目录</code>、<code>上一级目录</code>、<code>scripts\</code> 子目录里，查找下面这几个固定文件名：
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>文件名</th><th>面板上的名字</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td>Clean_Cache.exe</td><td>Clean Cache</td><td>清理缓存目录</td></tr>
+            <tr><td>Merge_PDF.exe</td><td>Merge PDF</td><td>合并 PDF</td></tr>
+            <tr><td>PPT_To_HTML.exe</td><td>PPT To HTML</td><td>PPT 转网页</td></tr>
+            <tr><td>Remove_gray_background.exe</td><td>Remove Gray Background</td><td>去灰底抠图</td></tr>
+            <tr><td>Word2Pdf_Tool.exe</td><td>Word To PDF</td><td>Word 转 PDF</td></tr>
+            <tr><td>生成Index.exe</td><td>生成 Index</td><td>当前禁用（按钮灰掉）</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>想用这个面板，把自己的工具按上面的名字放进 exe 旁边的 <code>scripts\</code> 文件夹：</p>
+
+      <div class="code">
+        <header><span>目录结构</span><button class="copy" type="button">copy</button></header>
+<pre>D:\Tools\C.pet\
+├─ C.pet.exe
+└─ scripts\
+   ├─ Merge_PDF.exe
+   ├─ Word2Pdf_Tool.exe
+   └─ ...</pre>
+      </div>
+
+      <div class="note warn">
+        <span class="tag">安全</span>
+        <div>
+          <p>C.pet 会直接 <code>spawn</code> 这些 exe。所以只用你自己放进去的文件——别人塞了 exe 进你的 <code>scripts\</code>，点一下就会运行。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="settings">
+      <h2><span class="num">07</span>设置面板</h2>
+      <p class="section-intro">齿轮图标进去。内容多，面板是可滚动的（最高 420px），下面按从上到下的顺序说明。</p>
+
+      <figure>
+        <img src="img/settings.webp" alt="C.pet 设置面板：宠物大小、自动动作、动作列表、特效、快捷键、置顶、开机自启等" data-zoom />
+        <figcaption>设置面板：上面是外观，中间是动作/特效，下面是快捷键、系统集成和退出。</figcaption>
+      </figure>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>设置项</th><th>作用</th><th>建议</th></tr></thead>
+          <tbody>
+            <tr><td>Pet size</td><td>20%–135% 缩放宠物</td><td>笔记本上 60% 左右比较不挡事</td></tr>
+            <tr><td>Auto actions</td><td>每 30 秒随机换动作</td><td>录屏或专注时关掉</td></tr>
+            <tr><td>Actions</td><td>16 个动作按钮，点了立刻播放</td><td>可以当"我现在很开心"的开关</td></tr>
+            <tr><td>Effects</td><td>9 种粒子特效，单选</td><td>Hearts / Snow 适合截图</td></tr>
+            <tr><td>Quick entry</td><td>改唤出待办面板的快捷键</td><td>点按钮 → 直接按新组合 → <kbd>Esc</kbd> 取消</td></tr>
+            <tr><td>Always on top</td><td>宠物是否永远置顶</td><td>看全屏电影时可以关</td></tr>
+            <tr><td>Launch at startup</td><td>登录 Windows 时自动启动</td><td>写入 HKCU 的 Run 键，可随时关</td></tr>
+            <tr><td>Reset to minimum size</td><td>缩到 20%</td><td>急用时不用拖滑块</td></tr>
+            <tr><td>Move pet to bottom-right</td><td>位置复位</td><td>宠物跑丢了点这个</td></tr>
+            <tr><td>Completed database</td><td>查看/删除完成记录</td><td>右边数字是记录条数</td></tr>
+            <tr><td>Quit C.pet</td><td>退出程序</td><td>快捷键 <kbd>Ctrl</kbd> + <kbd>/</kbd></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note tip">
+        <span class="tag">快捷键冲突</span>
+        <div>
+          <p>如果 <kbd>Ctrl</kbd> + <kbd>.</kbd> 被别的软件抢了，设置里会显示占用提示。点快捷键按钮重新按一个组合即可，只支持 Ctrl / Alt / Shift + 一个键。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="shortcuts">
+      <h2><span class="num">08</span>快捷键总表</h2>
+      <p class="section-intro">就这几个，不用背。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>快捷键</th><th>作用</th><th>生效范围</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>.</kbd></td><td>唤出 / 隐藏待办面板</td><td>全局，可自定义</td></tr>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>/</kbd></td><td>退出 C.pet</td><td>全局</td></tr>
+            <tr><td><kbd>Shift</kbd> + <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td>移动宠物（每次 4px）</td><td>仅 C.pet 聚焦时</td></tr>
+            <tr><td>鼠标拖动</td><td>移动宠物</td><td>宠物本身</td></tr>
+            <tr><td>滚轮</td><td>缩放宠物</td><td>悬停宠物时</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note tip">
+        <span class="tag">为什么只有聚焦时才响应</span>
+        <div>
+          <p>方向键是很珍贵的按键。C.pet 只在它自己处于活动窗口时才拦截 <kbd>Shift</kbd> + 方向键，</p>
+          <p>所以在浏览器、Word、IDE 里选中文字依然是正常的 <kbd>Shift</kbd> + 方向键选择，不会被桌宠抢走。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="data">
+      <h2><span class="num">09</span>数据与卸载</h2>
+      <p class="section-intro">所有东西都在一个文件夹里，复制它就等于备份。</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>内容</th><th>位置</th><th>格式</th></tr></thead>
+          <tbody>
+            <tr><td>待办 / 想法 / 快捷链接</td><td><code>%APPDATA%\c-pet\Local Storage\</code></td><td>Chromium localStorage</td></tr>
+            <tr><td>设置（大小、特效、快捷键…）</td><td><code>%APPDATA%\c-pet\settings.json</code></td><td>JSON</td></tr>
+            <tr><td>窗口位置</td><td><code>%APPDATA%\c-pet\window-state.json</code></td><td>JSON</td></tr>
+            <tr><td>完成记录</td><td><code>%APPDATA%\c-pet\completed-tasks.json</code></td><td>JSON</td></tr>
+            <tr><td>开机自启</td><td><code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code></td><td>注册表</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>备份 / 迁移</h3>
+      <div class="code">
+        <header><span>PowerShell</span><button class="copy" type="button">copy</button></header>
+<pre><span class="cmt"># 备份（会打包成一个 zip）</span>
+Compress-Archive <span class="str">"$env:APPDATA\c-pet"</span> <span class="str">"D:\c-pet-backup.zip"</span> -Force
+
+<span class="cmt"># 换电脑后还原：先装好 exe，退出 C.pet，再解压覆盖</span>
+Expand-Archive <span class="str">"D:\c-pet-backup.zip"</span> <span class="str">"$env:APPDATA"</span> -Force</pre>
+      </div>
+
+      <h3>升级</h3>
+      <p>
+        直接下新 exe 覆盖旧的就行。存储路径是固定的 <code>%APPDATA%\c-pet</code>，和 exe 放在哪、叫什么名字都无关，
+        所以 1.10 升到 1.12 也不会丢待办。
+      </p>
+
+      <h3>彻底卸载</h3>
+      <ol>
+        <li>设置里关掉「Launch at startup」（如果你开过）。</li>
+        <li>退出 C.pet（<kbd>Ctrl</kbd> + <kbd>/</kbd>）。</li>
+        <li>删掉 exe，删掉 <code>%APPDATA%\c-pet</code>。</li>
+      </ol>
+    </section>
+
+    <section id="faq">
+      <h2><span class="num">10</span>常见问题</h2>
+
+      <div class="faq">
+        <details open>
+          <summary>弹了 SmartScreen / Defender 拦截，是病毒吗？</summary>
+          <p>不是。exe 没有代码签名证书，所以 Windows 会对任何未知发布者的新程序都提示一次。点「更多信息 → 仍要运行」即可。源码全部开源，你可以自己 <code>npm run dist</code> 打一个一模一样的包。</p>
+        </details>
+        <details>
+          <summary>双击了没反应 / 只开了一个？</summary>
+          <p>C.pet 是单实例程序：重复双击不会开第二个，而是把已经在跑的那只宠物叫到前台。如果确实没看到它，可能是被拖到屏幕外了——设置里点「Move pet to bottom-right」。</p>
+        </details>
+        <details>
+          <summary>宠物挡住我了 / 想让它消失一会儿</summary>
+          <p>滚轮缩到 20%，或者按 <kbd>Shift</kbd> + <kbd>↓</kbd> 把它塞到任务栏后面。想彻底关掉用 <kbd>Ctrl</kbd> + <kbd>/</kbd>；关掉「Auto actions」也能让它安静。</p>
+        </details>
+        <details>
+          <summary><kbd>Ctrl</kbd> + <kbd>.</kbd> 没反应</summary>
+          <p>多半被输入法或别的软件占了。打开设置 → Quick entry → 点按钮 → 直接按一个新的组合（比如 <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd>）。如果新组合也失败，面板会提示。</p>
+        </details>
+        <details>
+          <summary>打游戏时宠物挡视野</summary>
+          <p>进入全屏会自动隐藏。如果游戏是"无边框窗口化"，系统认为它不是全屏，可以用 <kbd>Ctrl</kbd> + <kbd>.</kbd> 之外的方式临时缩到 20%。</p>
+        </details>
+        <details>
+          <summary>监控里 GPU / 网速显示 Unavailable</summary>
+          <p>这两项走 Windows 性能计数器。部分精简版系统、虚拟机、老显卡驱动没有这些计数器，取不到就显示 Unavailable，其它指标不受影响。</p>
+        </details>
+        <details>
+          <summary>待办突然空了</summary>
+          <p>数据在 <code>%APPDATA%\c-pet\Local Storage</code>。常见原因是：换了 Windows 用户、清空了 AppData、或者用清理软件把 Electron 缓存一起删了。所以重要清单建议偶尔备份一下那个文件夹。</p>
+        </details>
+        <details>
+          <summary>支持 Mac / Linux 吗？</summary>
+          <p>不支持。代码里用了 <code>SetWindowsHookEx</code>、<code>Get-Counter</code>、任务栏快捷方式和 <code>shell.writeShortcutLink</code>，都是 Windows 专有 API。</p>
+        </details>
+        <details>
+          <summary>会不会偷偷上传我的待办？</summary>
+          <p>不会。整个程序没有任何网络请求代码；唯一会打开的浏览器是你在快捷链接里点的那一下，交给 Edge 打开。</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="dev">
+      <h2><span class="num">11</span>开发者</h2>
+      <p class="section-intro">纯 Electron + 原生 JS，没有框架、没有构建步骤、没有依赖注入容器。总共 8 个文件。</p>
+
+      <h3>跑起来</h3>
+      <div class="code">
+        <header><span>终端</span><button class="copy" type="button">copy</button></header>
+<pre>git clone https://github.com/JaiJaiC/C.pet.git
+cd C.pet
+npm install
+npm start          <span class="cmt"># 开发模式，直接起 Electron</span></pre>
+      </div>
+
+      <h3>打包 exe</h3>
+      <div class="code">
+        <header><span>终端</span><button class="copy" type="button">copy</button></header>
+<pre>npm run dist       <span class="cmt"># dist\C.pet.exe（单文件免安装）</span>
+npm run pack       <span class="cmt"># dist\win-unpacked\（目录版，调试用）</span></pre>
+      </div>
+
+      <p>两个已经写进 <code>package.json</code> 的坑：</p>
+      <ul>
+        <li><code>electronDist: "node_modules/electron/dist"</code> — 复用本地 Electron，打包时不再重新下载 100 MB。</li>
+        <li><code>signAndEditExecutable: false</code> — 跳过 rcedit 与签名，没有证书也能出包（代价是没有图标以外的元数据编辑，以及会触发 SmartScreen）。</li>
+      </ul>
+
+      <div class="note tip">
+        <span class="tag">缓存</span>
+        <div>
+          <p>如果第一次打包卡在下载 NSIS，给 electron-builder 指一个可写的缓存目录：</p>
+          <p><code>$env:ELECTRON_BUILDER_CACHE="D:\cache\electron-builder"</code>，然后再 <code>npm run dist</code>。</p>
+        </div>
+      </div>
+
+      <h3>代码地图</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>文件</th><th>职责</th><th>要点</th></tr></thead>
+          <tbody>
+            <tr><td>main.js</td><td>主进程</td><td>两个无边框置顶窗口、拖拽移动与边界、全局快捷键、性能采样、工具启动、单实例锁</td></tr>
+            <tr><td>preload.js</td><td>桥接层</td><td>contextBridge 暴露 30 个 <code>window.cpet.*</code> 方法，渲染层拿不到 Node</td></tr>
+            <tr><td>index.html / app.js</td><td>宠物窗口</td><td>精灵图切换、指针拖拽、滚轮缩放、鼠标穿透、特效</td></tr>
+            <tr><td>note.html / note.js</td><td>面板窗口</td><td>五个视图（todo / monitor / tools / settings / database）与 localStorage 数据</td></tr>
+            <tr><td>styles.css</td><td>样式</td><td>深色主题、粒子特效、面板自适应高度</td></tr>
+            <tr><td>assets/</td><td>素材</td><td>15 个动作立绘 + 256px 任务栏图标</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>技术栈</h3>
+      <p>
+        Electron 31 · Chromium 与 Node 同源 · 原生 HTML/CSS/JS · electron-builder 24（portable 目标）·
+        PowerShell 互操作（性能计数器、键盘钩子、全屏检测）。没有 React、没有打包器、没有 TypeScript 编译步骤。
+      </p>
+
+      <h3>许可证</h3>
+      <p><a href="https://github.com/JaiJaiC/C.pet/blob/main/LICENSE">MIT</a> —— 随便用、随便改，保留版权声明即可。素材是作者本人形象，二次创作前先打个招呼。</p>
+    </section>
+
+    <footer>
+      <span>C.pet v1.12.7 · MIT · Made by JaiJaiC</span>
+      <span>
+        <a href="https://github.com/JaiJaiC/C.pet">GitHub</a> ·
+        <a href="https://github.com/JaiJaiC/C.pet/releases">Releases</a> ·
+        <a href="https://github.com/JaiJaiC/C.pet/issues">Issues</a>
+      </span>
+    </footer>
+  </main>
+</div>
+
+<a class="top" id="toTop" href="#top" aria-label="回到顶部">↑</a>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="放大预览">
+  <img id="lightboxImg" alt="" />
+  <span class="hint">点击任意处 / 按 Esc 关闭</span>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var progress = document.getElementById("progress");
+  var toTop = document.getElementById("toTop");
+  var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc a"));
+  var sections = tocLinks
+    .map(function (link) { return document.querySelector(link.getAttribute("href")); })
+    .filter(Boolean);
+
+  function onScroll() {
+    var height = document.documentElement.scrollHeight - window.innerHeight;
+    var ratio = height > 0 ? window.scrollY / height : 0;
+    progress.style.width = (ratio * 100).toFixed(2) + "%";
+    toTop.classList.toggle("show", window.scrollY > 600);
+
+    var current = null;
+    for (var i = 0; i < sections.length; i += 1) {
+      if (sections[i].getBoundingClientRect().top <= 120) current = sections[i].id;
+    }
+    tocLinks.forEach(function (link) {
+      link.classList.toggle("active", link.getAttribute("href") === "#" + current);
+    });
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+
+  // copy buttons
+  document.querySelectorAll(".code").forEach(function (block) {
+    var button = block.querySelector(".copy");
+    var pre = block.querySelector("pre");
+    if (!button || !pre) return;
+    button.addEventListener("click", function () {
+      var text = pre.innerText.replace(/\u00a0/g, " ");
+      var done = function () {
+        button.textContent = "copied";
+        setTimeout(function () { button.textContent = "copy"; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, done);
+      } else {
+        var area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        try { document.execCommand("copy"); } catch (error) { /* ignore */ }
+        document.body.removeChild(area);
+        done();
+      }
+    });
+  });
+
+  // lightbox
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightboxImg");
+
+  function closeLightbox() {
+    lightbox.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll("figure img[data-zoom]").forEach(function (image) {
+    image.addEventListener("click", function () {
+      lightboxImg.src = image.currentSrc || image.src;
+      lightboxImg.alt = image.alt || "";
+      lightbox.classList.add("open");
+      document.body.style.overflow = "hidden";
+    });
+  });
+
+  lightbox.addEventListener("click", closeLightbox);
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeLightbox();
+  });
+})();
+</script>
+</body>
+</html>

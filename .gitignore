@@ -10,9 +10,14 @@ dist/
 release/
 build-test/
 out-test/
+build-verify/
+verify*/
 *.nsis.7z
 *.blockmap
 .build-cache/
+.build-temp/
+.smoke-appdata*/
+.smoke-temp/
 
 # 本地构建日志 / 临时文件
 build-dist*.log
