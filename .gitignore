@@ -1,0 +1,40 @@
+# ---------------------------------------------------------------
+# C.pet — 仓库里只放源码、资源和文档，构建产物与个人数据不进版本库
+# ---------------------------------------------------------------
+
+# 依赖
+node_modules/
+
+# 构建产物
+dist/
+release/
+build-test/
+out-test/
+*.nsis.7z
+*.blockmap
+.build-cache/
+
+# 本地构建日志 / 临时文件
+build-dist*.log
+probe.txt
+probe.7z
+x2.7z
+*.lnk
+*-safe.exe
+
+# 运行时用不到的抠图中间素材（体积大）
+assets/*-chroma.png
+
+# 个人 / 私有内容
+我的自画像.jpg
+c-pet-user-data-backup-*.zip
+
+# 工具面板依赖的本地 exe 工具箱（体积巨大，且含嵌套仓库）
+scripts/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
+.DS_Store

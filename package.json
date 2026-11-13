@@ -1,0 +1,57 @@
+{
+  "name": "c-pet",
+  "version": "1.12.7",
+  "author": "JaiJaiC",
+  "description": "A QQ-pet style Windows desktop pet with To Do notes, a system monitor and a tools launcher.",
+  "license": "MIT",
+  "homepage": "https://jaijaic.github.io/C.pet/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaiJaiC/C.pet.git"
+  },
+  "keywords": [
+    "desktop-pet",
+    "electron",
+    "todo",
+    "windows",
+    "qq-pet"
+  ],
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.local.cpet",
+    "productName": "C.pet",
+    "electronDist": "node_modules/electron/dist",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "note.html",
+      "styles.css",
+      "app.js",
+      "note.js",
+      "main.js",
+      "preload.js",
+      "assets/**/*",
+      "!assets/*-chroma.png",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/task_icon.ico",
+      "signAndEditExecutable": false,
+      "target": [
+        "portable"
+      ],
+      "artifactName": "C.pet.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}

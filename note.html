@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="note-page" spellcheck="false">
+    <main class="panel-shell">
+      <section class="panel note" id="note">
+        <header class="title-bar">
+          <span class="app-title" id="listTitle">To Do</span>
+          <span class="ascii-cat centered-cat" id="asciiCat" aria-hidden="true">(=^･ω･^=)</span>
+          <div class="title-actions">
+            <button class="mode-button" id="listModeButton" type="button" title="Switch to Idea">Idea</button>
+            <button class="icon-button" id="monitorButton" type="button" aria-label="Monitor" title="Monitor">◫</button>
+            <button class="icon-button" id="toolsButton" type="button" aria-label="Tools" title="Tools">🔧</button>
+            <button class="icon-button" id="settingsButton" type="button" aria-label="Settings" title="Settings">⚙</button>
+          </div>
+        </header>
+        <ol class="task-list" id="todoList"></ol>
+        <div class="undo-toast" id="undoToast" hidden>
+          <span id="undoMessage">Task completed</span>
+          <button id="undoComplete" type="button">Undo</button>
+        </div>
+        <footer class="quick-links" aria-label="Quick links">
+          <div class="quick-links-list" id="quickLinksList"></div>
+          <button class="link-add-button" id="showLinkForm" type="button" aria-label="Add link" title="Add link">+</button>
+          <form class="link-form" id="linkForm" hidden>
+            <input id="linkName" type="text" maxlength="24" placeholder="Name" autocomplete="off" spellcheck="false" />
+            <input id="linkUrl" type="url" maxlength="300" placeholder="https://..." autocomplete="off" spellcheck="false" />
+            <button type="submit">Add</button>
+          </form>
+        </footer>
+      </section>
+
+      <section class="panel monitor" id="monitorPanel" hidden>
+        <header class="title-bar subview-title-bar">
+          <span class="settings-title">monitor</span>
+          <span class="ascii-cat" id="monitorCat" aria-hidden="true">(=^･ω･^=)</span>
+          <button class="icon-button back-button" id="backFromMonitor" type="button" aria-label="Back" title="Back">←</button>
+        </header>
+        <div class="monitor-content" id="monitorContent"></div>
+      </section>
+
+      <section class="panel tools" id="toolsPanel" hidden>
+        <header class="title-bar subview-title-bar">
+          <span class="settings-title">tools</span>
+          <span class="ascii-cat" id="toolsCat" aria-hidden="true">(=^･ω･^=)</span>
+          <button class="icon-button back-button" id="backFromTools" type="button" aria-label="Back" title="Back">←</button>
+        </header>
+        <div class="tools-content">
+          <div class="tools-list" id="toolsList"></div>
+          <p class="tools-status" id="toolsStatus"></p>
+        </div>
+      </section>
+
+      <section class="panel settings" id="settingsPanel" hidden>
+        <header class="title-bar subview-title-bar">
+          <span class="settings-title">settings</span>
+          <span class="ascii-cat" id="settingsCat" aria-hidden="true">(=^･ω･^=)</span>
+          <button class="icon-button back-button" id="backToTodos" type="button" aria-label="Back" title="Back">←</button>
+        </header>
+        <div class="settings-content">
+          <label class="setting-row">
+            <span>Pet size</span>
+            <output id="scaleValue">100%</output>
+            <input id="scaleRange" type="range" min="0.2" max="1.35" step="0.01" />
+          </label>
+          <label class="switch-row">
+            <span><strong>Auto actions</strong><small>Switch randomly every 30 seconds</small></span>
+            <input id="autoActionToggle" type="checkbox" />
+          </label>
+          <section class="settings-group">
+            <div class="settings-group-title"><strong>Actions</strong><small>Click to play immediately</small></div>
+            <div class="action-grid" id="actionGrid"></div>
+          </section>
+          <section class="settings-group">
+            <div class="settings-group-title"><strong>Effects</strong><small>Choose one</small></div>
+            <div class="effect-grid" id="effectGrid"></div>
+          </section>
+          <div class="shortcut-row">
+            <span><strong>Quick entry</strong><small>Show or hide C.pet</small></span>
+            <button id="shortcutButton" type="button">Ctrl + .</button>
+            <small class="shortcut-status" id="shortcutStatus">Click, then press a shortcut</small>
+          </div>
+          <div class="shortcut-row">
+            <span><strong>Move pet</strong><small>Shift + Arrows while C.pet is active</small></span>
+            <kbd class="shortcut-display">Shift + Arrows</kbd>
+            <small class="shortcut-status">Works after clicking the pet or this note; text fields keep normal selection</small>
+          </div>
+          <label class="switch-row">
+            <span><strong>Always on top</strong><small>Keep C.pet above other windows</small></span>
+            <input id="alwaysOnTopToggle" type="checkbox" />
+          </label>
+          <label class="switch-row">
+            <span><strong>Launch at startup</strong><small>Start C.pet when Windows signs in</small></span>
+            <input id="launchAtLoginToggle" type="checkbox" />
+          </label>
+          <button class="wide-button" id="resetScale" type="button">Reset to minimum size</button>
+          <button class="wide-button" id="resetPetPosition" type="button">Move pet to bottom-right</button>
+          <button class="wide-button database-button" id="openDatabase" type="button">
+            <span>Completed database</span><output id="databaseCount">0</output>
+          </button>
+          <button class="wide-button danger" id="quitApp" type="button">Quit C.pet <span>Ctrl + /</span></button>
+          <div class="app-version" id="appVersion">v1.12.7</div>
+        </div>
+      </section>
+
+      <section class="panel database" id="databasePanel" hidden>
+        <header class="title-bar">
+          <button class="icon-button back-button" id="backToSettings" type="button" aria-label="Back" title="Back">←</button>
+          <span class="settings-title">completed database</span>
+          <span class="ascii-cat" id="databaseCat" aria-hidden="true">(=^･ω･^=)</span>
+        </header>
+        <ol class="database-list" id="databaseList"></ol>
+        <button class="database-clear" id="clearDatabase" type="button">Clear database</button>
+      </section>
+    </main>
+    <script src="note.js"></script>
+  </body>
+</html>
